@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --red:#C8102E;--red-deep:#9B0D22;--red-mid:#B30E28;--red-light:#F5D0D7;--red-muted:#FDF0F2;
+  --white:#FFFFFF;--off:#FAF8F8;--g50:#F7F5F5;--g100:#EDE9E9;--g200:#D9D3D3;--g400:#A09090;
+  --g600:#6B5C5C;--g800:#2E1E1E;--text:#1A0E0E;--muted:#7A6060;--border:#EAE3E3;
+  --green:#0E7A45;--amber:#C47900;--blue:#1A6FA1;
+  --shadow-sm:0 1px 4px rgba(200,16,46,.06);--shadow-md:0 4px 18px rgba(200,16,46,.1);--shadow-lg:0 12px 40px rgba(0,0,0,.13);
+  --r:10px;--r-lg:16px;--sw:248px;--font-d:'Playfair Display',Georgia,serif;--font-b:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--font-b);font-size:14px;color:var(--text);background:var(--g50)}
+button{font-family:var(--font-b);cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:var(--font-b)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:10px}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;background:var(--red-deep);display:flex;align-items:center;justify-content:center;z-index:9000;animation:fadeIn .4s}
+.login-box{background:var(--white);border-radius:20px;padding:44px 40px;width:400px;box-shadow:var(--shadow-lg)}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.login-icon{width:44px;height:44px;background:var(--red-muted);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.login-icon svg{width:24px;height:24px;fill:var(--red)}
+.login-title{font-family:var(--font-d);font-size:22px;font-weight:700;color:var(--text)}
+.login-sub{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.login-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:5px}
+.login-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);margin-bottom:14px;outline:none;transition:border-color .18s}
+.login-input:focus{border-color:var(--red)}
+.login-btn{width:100%;padding:11px;background:var(--red);color:#fff;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.3px;cursor:pointer;border:none;margin-top:4px;transition:background .18s}
+.login-btn:hover{background:var(--red-deep)}
+.login-roles{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.login-roles p{font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.role-chips{display:flex;flex-wrap:wrap;gap:6px}
+.role-chip{padding:4px 10px;background:var(--g50);border:1.5px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;color:var(--g600);transition:all .18s}
+.role-chip:hover{background:var(--red-muted);border-color:var(--red-light);color:var(--red)}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh;overflow:hidden;display:none}
+.sidebar{width:var(--sw);background:var(--red-deep);display:flex;flex-direction:column;height:100vh;flex-shrink:0;overflow-y:auto}
+.sb-brand{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-brand-row{display:flex;align-items:center;gap:10px}
+.sb-icon{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.sb-icon svg{width:20px;height:20px;fill:#fff}
+.sb-name{font-family:var(--font-d);font-size:16px;font-weight:700;color:#fff;line-height:1.2}
+.sb-tag{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.6px;text-transform:uppercase}
+.sb-nav{padding:10px 10px 0;flex:1}
+.nav-sec{padding:12px 8px 4px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.3);text-transform:uppercase}
+.nav-i{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:rgba(255,255,255,.65);font-size:13px;font-weight:500;background:transparent;transition:all .18s;width:100%;margin-bottom:2px;text-align:left}
+.nav-i svg{width:17px;height:17px;fill:currentColor;flex-shrink:0}
+.nav-i:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-i.active{background:#fff;color:var(--red);font-weight:700}
+.nav-i.active svg{fill:var(--red)}
+.sb-footer{padding:14px 12px;border-top:1px solid rgba(255,255,255,.1)}
+.user-chip{display:flex;align-items:center;gap:10px}
+.u-av{width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.u-name{font-size:13px;color:#fff;font-weight:600}
+.u-role{font-size:10px;color:rgba(255,255,255,.45)}
+.logout-btn{margin-top:10px;width:100%;padding:7px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border-radius:7px;font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;transition:all .18s}
+.logout-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 26px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shadow-sm)}
+.pg-title{font-family:var(--font-d);font-size:20px;font-weight:700;color:var(--text)}
+.topbar-r{display:flex;align-items:center;gap:8px}
+.content{flex:1;overflow-y:auto;padding:24px}
+.page-s{display:none}
+.page-s.active{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.page-s.active{animation:fadeIn .25s}
+
+/* ── COMPONENTS ── */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-open{background:#EBF5FB;color:var(--blue)}.b-qual{background:#FFF4E5;color:var(--amber)}
+.b-conv{background:#E8F8F0;color:var(--green)}.b-drop{background:var(--g100);color:var(--g600)}
+.b-red{background:var(--red-muted);color:var(--red)}.b-green{background:#E8F8F0;color:var(--green)}
+.b-amber{background:#FFF4E5;color:var(--amber)}.b-blue{background:#EBF5FB;color:var(--blue)}
+.b-purple{background:#F0EBF8;color:#6B3FA6}.b-gray{background:var(--g100);color:var(--g600)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+.btn-p{background:var(--red);color:#fff;border:none}.btn-p:hover{background:var(--red-deep)}
+.btn-s{background:#fff;color:var(--red);border:1.5px solid var(--red)}.btn-s:hover{background:var(--red-muted)}
+.btn-g{background:transparent;color:var(--g600);border:1.5px solid var(--border)}.btn-g:hover{background:var(--g50)}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:6px}
+.btn-danger{background:var(--red-muted);color:var(--red);border:1.5px solid var(--red-light)}.btn-danger:hover{background:var(--red-light)}
+
+.card{background:#fff;border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden}
+.ch{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ch h3{font-size:14px;font-weight:700;color:var(--text)}
+.cb{padding:18px}
+.cb.np{padding:0}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat-c{background:#fff;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px 20px;position:relative;overflow:hidden}
+.stat-c::before{content:'';position:absolute;right:-16px;top:-16px;width:72px;height:72px;border-radius:50%;background:var(--red-muted)}
+.stat-ic{width:36px;height:36px;border-radius:9px;background:var(--red-muted);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:12px}
+.stat-ic svg{width:18px;height:18px;fill:var(--red)}
+.stat-v{font-size:26px;font-weight:700;color:var(--text);font-family:var(--font-d);line-height:1}
+.stat-l{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.3px;margin-top:4px}
+.stat-d{font-size:11px;font-weight:600;color:var(--green);margin-top:4px}
+.stat-d.neg{color:var(--red)}
+
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.chart-wrap{height:220px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.mb4{margin-bottom:16px}.mb6{margin-bottom:24px}
+.fbet{display:flex;align-items:center;justify-content:space-between}
+
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.srch{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;flex:1;max-width:300px}
+.srch svg{width:14px;height:14px;fill:var(--g400);flex-shrink:0}
+.srch input{border:none;background:transparent;font-size:13px;color:var(--text);width:100%;outline:none}
+.srch input::placeholder{color:var(--g400)}
+.fsel{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:#fff;font-family:var(--font-b);outline:none}
+.fsel:focus{border-color:var(--red)}
+
+.dt{width:100%;border-collapse:collapse}
+.dt th{background:var(--g50);padding:10px 13px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap}
+.dt td{padding:10px 13px;border-bottom:1px solid var(--g100);font-size:13px;color:var(--text);vertical-align:middle}
+.dt tr:last-child td{border:none}
+.dt tr:hover td{background:var(--g50)}
+.acts{display:flex;gap:5px;flex-wrap:wrap}
+
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:18px}
+.tab-b{padding:9px 16px;font-size:13px;font-weight:600;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .18s}
+.tab-b.active{color:var(--red);border-bottom-color:var(--red)}
+.tab-p{display:none}.tab-p.active{display:block}
+
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.fc{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:#fff;font-family:var(--font-b);outline:none;transition:border-color .18s}
+.fc:focus{border-color:var(--red)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:2000;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:#fff;border-radius:var(--r-lg);width:580px;max-width:96vw;max-height:91vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-lg{width:740px}
+.mh{padding:20px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.mh h3{font-family:var(--font-d);font-size:18px;font-weight:700}
+.mc{width:28px;height:28px;border-radius:50%;background:var(--g100);font-size:17px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;border:none;transition:background .18s}
+.mc:hover{background:var(--g200)}
+.mb-body{padding:22px}
+.mf{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+.prog{background:var(--g100);border-radius:20px;height:7px;overflow:hidden}
+.prog-f{background:var(--red);border-radius:20px;height:100%;transition:width .4s}
+.prog-f.g{background:var(--green)}.prog-f.a{background:var(--amber)}
+
+.esc-ban{background:var(--red-muted);border:1.5px solid var(--red-light);border-radius:var(--r);padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.esc-ban svg{width:17px;height:17px;fill:var(--red);flex-shrink:0}
+.esc-ban p{font-size:13px;color:var(--red-deep);font-weight:500}
+
+.slab-elig{background:#E8F8F0;border:1px solid #B2DFCD;border-radius:var(--r);padding:13px 16px;margin-bottom:14px}
+.slab-elig strong{color:var(--green);font-size:13px}
+.slab-elig ul{margin-top:6px;padding-left:18px}
+.slab-elig li{font-size:12px;color:#1A5E40;margin-bottom:3px;list-style:disc}
+
+.tc-card{background:#fff;border-radius:var(--r-lg);border:1px solid var(--border);padding:16px 18px}
+.tc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.tc-name{font-size:14px;font-weight:700;color:var(--text)}
+.tc-uni{font-size:11px;color:var(--muted);margin-top:1px}
+.tc-num{font-size:24px;font-weight:700;font-family:var(--font-d);color:var(--red);line-height:1}
+.tc-of{font-size:11px;color:var(--muted)}
+.tc-conv{font-size:12px;font-weight:600;color:var(--green);margin-top:8px}
+
+/* ══ PIPELINE KANBAN ══ */
+#page-pipeline{height:calc(100vh - 56px - 48px)}
+.pip-inner{display:flex;flex-direction:column;height:100%}
+.pip-topbar{display:flex;align-items:center;justify-content:space-between;padding:0 0 18px;flex-shrink:0}
+.pip-topbar-left{display:flex;align-items:center;gap:10px}
+.pip-legend{display:flex;align-items:center;gap:16px}
+.pip-legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.pip-legend-dot{width:8px;height:8px;border-radius:50%}
+.pip-board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;flex:1;overflow:hidden;min-height:0;height:100%}
+.pip-lane{display:flex;flex-direction:column;border-radius:var(--r-lg);overflow:hidden;min-height:0}
+.pip-lane-head{padding:14px 16px 12px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.pip-lane-title{display:flex;align-items:center;gap:8px}
+.pip-lane-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.pip-lane-icon svg{width:14px;height:14px}
+.pip-lane-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.pip-lane-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;min-width:24px;text-align:center}
+.pip-lane-pct{font-size:10px;font-weight:600;opacity:.7}
+.pip-drop-zone{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:80px;transition:background .2s}
+.pip-drop-zone::-webkit-scrollbar{width:3px}
+.pip-drop-zone::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:10px}
+.pip-drop-zone.drag-over{background:rgba(200,16,46,.07);outline:2px dashed rgba(200,16,46,.3);outline-offset:-4px;border-radius:var(--r)}
+
+/* KANBAN CARD */
+.kcard{background:#fff;border-radius:12px;padding:14px 15px;cursor:grab;user-select:none;
+  border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);
+  transition:box-shadow .2s,transform .2s,opacity .2s;position:relative;overflow:hidden}
+.kcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.kcard:hover{box-shadow:0 6px 20px rgba(0,0,0,.1);transform:translateY(-2px)}
+.kcard.dragging{opacity:.45;transform:scale(.97);cursor:grabbing;box-shadow:var(--shadow-lg)}
+.kcard.ghost{opacity:0;height:80px;background:var(--red-muted);border:2px dashed var(--red-light);border-radius:12px}
+.kcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.kcard-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.kcard-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.3}
+.kcard-prog{font-size:11px;color:var(--muted);margin-top:1px}
+.kcard-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.kcard-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
+.kcard-tag svg{width:9px;height:9px;fill:currentColor}
+.kcard-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--g100)}
+.kcard-counsellor{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.kcard-cav{width:18px;height:18px;border-radius:50%;font-size:8px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center}
+.kcard-fu{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:3px}
+.kcard-fu svg{width:10px;height:10px;fill:currentColor}
+.kcard-esc{position:absolute;top:8px;right:8px;width:18px;height:18px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.kcard-esc svg{width:10px;height:10px;fill:#fff}
+.kcard-detail-btn{opacity:0;position:absolute;bottom:10px;right:10px;padding:4px 10px;background:var(--g50);border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.kcard:hover .kcard-detail-btn{opacity:1}
+/* Lane colour themes */
+.lane-open .pip-lane-head{background:linear-gradient(135deg,#EBF5FB,#DAEEF8)}
+.lane-open .pip-lane-icon{background:#1A6FA1;} .lane-open .pip-lane-icon svg{fill:#fff}
+.lane-open .pip-lane-label{color:#0E4D72}
+.lane-open .pip-lane-badge{background:#1A6FA1;color:#fff}
+.lane-open .pip-drop-zone{background:#F4FAFE}
+.lane-open .kcard::before{background:#1A6FA1}
+
+.lane-qual .pip-lane-head{background:linear-gradient(135deg,#FFF4E5,#FDECD0)}
+.lane-qual .pip-lane-icon{background:#C47900;} .lane-qual .pip-lane-icon svg{fill:#fff}
+.lane-qual .pip-lane-label{color:#7A4A00}
+.lane-qual .pip-lane-badge{background:#C47900;color:#fff}
+.lane-qual .pip-drop-zone{background:#FFFBF4}
+.lane-qual .kcard::before{background:#C47900}
+
+.lane-conv .pip-lane-head{background:linear-gradient(135deg,#E8F8F0,#D0F0E0)}
+.lane-conv .pip-lane-icon{background:#0E7A45;} .lane-conv .pip-lane-icon svg{fill:#fff}
+.lane-conv .pip-lane-label{color:#075C33}
+.lane-conv .pip-lane-badge{background:#0E7A45;color:#fff}
+.lane-conv .pip-drop-zone{background:#F5FDF8}
+.lane-conv .kcard::before{background:#0E7A45}
+
+.lane-drop .pip-lane-head{background:linear-gradient(135deg,#F2EEEE,#EAE4E4)}
+.lane-drop .pip-lane-icon{background:#6B5C5C;} .lane-drop .pip-lane-icon svg{fill:#fff}
+.lane-drop .pip-lane-label{color:#3D2E2E}
+.lane-drop .pip-lane-badge{background:#6B5C5C;color:#fff}
+.lane-drop .pip-drop-zone{background:#F8F5F5}
+.lane-drop .kcard::before{background:#A09090}
+
+/* drag ghost overlay */
+#dragGhost{position:fixed;pointer-events:none;z-index:9999;opacity:.9;transform:rotate(3deg) scale(1.04);box-shadow:0 16px 48px rgba(0,0,0,.18);border-radius:12px;background:#fff;padding:14px 15px;width:220px;font-family:var(--font-b)}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.info-item label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:3px}
+.info-item p{font-size:13px;color:var(--text)}
+
+.toast-container{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--text);color:#fff;padding:11px 16px;border-radius:9px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);animation:slideUp .3s ease;max-width:340px}
+.toast.success{background:var(--green)}.toast.error{background:var(--red)}.toast.warn{background:var(--amber)}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.perm-denied{padding:40px;text-align:center;color:var(--muted)}
+.perm-denied svg{width:48px;height:48px;fill:var(--g200);margin:0 auto 12px;display:block}
+.perm-denied h3{font-size:16px;color:var(--g400);margin-bottom:6px}
+
+.slab-t{width:100%;border-collapse:collapse}
+.slab-t th,.slab-t td{padding:8px 12px;text-align:left;font-size:13px}
+.slab-t th{background:var(--red-muted);color:var(--red-deep);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.slab-t tr:nth-child(even) td{background:var(--g50)}
+
+.md-section{margin-bottom:18px}
+.md-section h4{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.md-chip-row{display:flex;flex-wrap:wrap;gap:7px}
+.md-chip{background:var(--g50);border:1.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:6px}
+.md-chip button{width:16px;height:16px;border-radius:50%;background:var(--g200);color:var(--g600);font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;flex-shrink:0}
+.md-chip button:hover{background:var(--red-light);color:var(--red)}
+.md-add-row{display:flex;gap:8px;margin-top:8px}
+.md-add-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:var(--font-b);outline:none}
+.md-add-row input:focus{border-color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-icon"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg></div>
+      <div><div class="login-title">UniConnect CRM</div><div class="login-sub">University Marketing System</div></div>
+    </div>
+    <label class="login-label">Username / Email</label>
+    <input class="login-input" id="li-user" placeholder="e.g. counsellor@uni.lk" value="hom@uni.lk">
+    <label class="login-label">Password</label>
+    <input class="login-input" type="password" id="li-pass" placeholder="••••••••" value="demo">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-roles">
+      <p>Quick demo login as:</p>
+      <div class="role-chips">
+        <div class="role-chip" onclick="quickLogin('ceo')">CEO</div>
+        <div class="role-chip" onclick="quickLogin('hom')">Head of Marketing</div>
+        <div class="role-chip" onclick="quickLogin('manager')">Manager (UNI-1)</div>
+        <div class="role-chip" onclick="quickLogin('counsellor')">Counsellor — UNI-1</div>
+        <div class="role-chip" onclick="quickLogin('counsellor2')">Counsellor — UNI-2</div>
+        <div class="role-chip" onclick="quickLogin('counsellor3')">Counsellor — UNI-3</div>
+        <div class="role-chip" onclick="quickLogin('counsellor4')">Counsellor — UNI-4</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     APP
+══════════════════════════════════════════════════════════ -->
+<div id="app">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-row">
+      <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg></div>
+      <div><div class="sb-name">UniConnect</div><div class="sb-tag">Marketing CRM</div></div>
+    </div>
+  </div>
+  <nav class="sb-nav" id="sbNav"></nav>
+  <div class="sb-footer">
+    <div class="user-chip">
+      <div class="u-av" id="uAvatar">?</div>
+      <div><div class="u-name" id="uName">–</div><div class="u-role" id="uRole">–</div></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="fbet" style="gap:12px">
+      <h2 class="pg-title" id="pageTitle">Dashboard</h2>
+    </div>
+    <div class="topbar-r" id="topbarActions"></div>
+  </div>
+  <div class="content">
+
+    <!-- ════ DASHBOARD ════ -->
+    <div class="page-s active" id="page-dashboard">
+      <div class="stats-grid" id="dashStats"></div>
+      <div id="dashEsc"></div>
+      <div class="charts-grid">
+        <div class="card"><div class="ch"><h3>Lead Sources</h3></div><div class="cb"><div class="chart-wrap"><canvas id="cSourceChart"></canvas></div></div></div>
+        <div class="card"><div class="ch"><h3>Enrolment Funnel</h3></div><div class="cb"><div class="chart-wrap"><canvas id="cFunnelChart"></canvas></div></div></div>
+        <div class="card"><div class="ch"><h3>Monthly Enrolment Trend</h3></div><div class="cb"><div class="chart-wrap"><canvas id="cTrendChart"></canvas></div></div></div>
+        <div class="card"><div class="ch"><h3>University-wise Leads</h3></div><div class="cb"><div class="chart-wrap"><canvas id="cUniChart"></canvas></div></div></div>
+      </div>
+      <div class="fbet mb4"><h3 style="font-family:var(--font-d);font-size:16px;font-weight:700">Counsellor Performance</h3></div>
+      <div class="g3 mb6" id="dashTargets"></div>
+      <div class="card mb6" id="commEligCard">
+        <div class="ch"><h3>Commission Eligible This Month</h3><button class="btn btn-s btn-sm" onclick="showToast('Report sent to Finance Team','success')">Send to Finance</button></div>
+        <div class="cb np"><table class="dt"><thead><tr><th>Agent / Source</th><th>Type</th><th>Students</th><th>Slab</th><th>Commission</th><th>Status</th><th>Action</th></tr></thead><tbody id="commBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ════ LEADS ════ -->
+    <div class="page-s" id="page-leads">
+      <div class="tabs">
+        <button class="tab-b active" onclick="switchTab(this,'lt-status')">Lead Status</button>
+        <button class="tab-b" onclick="switchTab(this,'lt-bulk')">Bulk Upload</button>
+        <button class="tab-b" onclick="switchTab(this,'lt-digital')">Digital Leads</button>
+      </div>
+      <div class="tab-p active" id="lt-status">
+        <div class="toolbar">
+          <div class="srch"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" placeholder="Search leads…" id="lSearch" oninput="renderLeads()"></div>
+          <select class="fsel" id="lStatus" onchange="renderLeads()"><option value="">All Status</option><option>Open</option><option>Qualified</option><option>Converted</option><option>Dropped</option></select>
+          <select class="fsel" id="lUni" onchange="renderLeads()"><option value="">All Universities</option></select>
+          <select class="fsel" id="lSrc" onchange="renderLeads()"><option value="">All Sources</option><option>Agent</option><option>Student Referral</option><option>Staff Referral</option><option>Facebook</option><option>Website</option><option>Instagram</option></select>
+          <button class="btn btn-p" onclick="openLeadModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Lead</button>
+          <button class="btn btn-g btn-sm" onclick="bulkDeactivate()">Bulk Deactivate</button>
+        </div>
+        <div class="card"><div class="cb np"><table class="dt"><thead><tr><th><input type="checkbox" id="chkAll" onchange="toggleAllChk(this)"></th><th>Student Name</th><th>Program</th><th>University</th><th>Source</th><th>Counsellor</th><th>Status</th><th>Follow-Up</th><th>Actions</th></tr></thead><tbody id="leadsBody"></tbody></table></div></div>
+      </div>
+      <div class="tab-p" id="lt-bulk">
+        <div style="background:#fff;border-radius:var(--r-lg);border:2px dashed var(--border);padding:38px;text-align:center;margin-bottom:18px">
+          <svg viewBox="0 0 24 24" style="width:38px;height:38px;fill:var(--red-light);margin:0 auto 10px;display:block"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:12px">Drag & drop CSV / Excel or click to browse</p>
+          <button class="btn btn-s" onclick="showToast('42 leads imported from batch upload','success')">Browse Files</button>
+        </div>
+        <div class="card"><div class="ch"><h3>Bulk Upload History</h3><span class="badge b-blue">3 batches pending follow-up</span></div>
+          <div class="cb np"><table class="dt"><thead><tr><th>Batch Name</th><th>Uploaded</th><th>Total Leads</th><th>Follow-Up Pending</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>Facebook Campaign — Apr 2025</td><td>15 Apr 2025</td><td>78</td><td><span class="badge b-red">12</span></td><td><span class="badge b-amber">In Progress</span></td><td><button class="btn btn-s btn-sm">View Leads</button></td></tr>
+            <tr><td>Open Day Walkins — Mar 2025</td><td>22 Mar 2025</td><td>45</td><td><span class="badge b-green">0</span></td><td><span class="badge b-green">Completed</span></td><td><button class="btn btn-g btn-sm">Report</button></td></tr>
+            <tr><td>Website Inquiry — Mar 2025</td><td>10 Mar 2025</td><td>29</td><td><span class="badge b-red">3</span></td><td><span class="badge b-amber">In Progress</span></td><td><button class="btn btn-s btn-sm">View Leads</button></td></tr>
+          </tbody></table></div></div>
+      </div>
+      <div class="tab-p" id="lt-digital">
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/></svg></div><div class="stat-v">98</div><div class="stat-l">Facebook</div></div>
+          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg></div><div class="stat-v">64</div><div class="stat-l">Website</div></div>
+          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg></div><div class="stat-v">37</div><div class="stat-l">Instagram</div></div>
+          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 6V7l4 4-4 4v-2H8v-4h4z"/></svg></div><div class="stat-v">22</div><div class="stat-l">Other Platforms</div></div>
+        </div>
+        <div class="card"><div class="ch"><h3>Digital Lead Workflow</h3><span class="badge b-red">15 follow-ups pending</span></div>
+          <div class="cb np"><table class="dt"><thead><tr><th>Name</th><th>Platform</th><th>Program Interest</th><th>Received</th><th>Assigned To</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="digitalLeadsBody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ════ PIPELINE ════ -->
+    <div class="page-s" id="page-pipeline">
+      <div class="pip-inner">
+      <div class="pip-topbar">
+        <div class="pip-topbar-left">
+          <div class="pip-legend">
+            <div class="pip-legend-item"><div class="pip-legend-dot" style="background:#1A6FA1"></div>Open</div>
+            <div class="pip-legend-item"><div class="pip-legend-dot" style="background:#C47900"></div>Qualified</div>
+            <div class="pip-legend-item"><div class="pip-legend-dot" style="background:#0E7A45"></div>Converted</div>
+            <div class="pip-legend-item"><div class="pip-legend-dot" style="background:#6B5C5C"></div>Dropped</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--muted)">Drag cards to update status</span>
+          <button class="btn btn-p btn-sm" onclick="openLeadModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Lead</button>
+        </div>
+      </div>
+      <div class="pip-board" id="pipBoard"></div>
+      </div>
+    </div>
+
+    <!-- ════ FOLLOW-UPS ════ -->
+    <div class="page-s" id="page-followups">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg></div><div class="stat-v" id="fuDue">31</div><div class="stat-l">Follow-Ups Due Today</div></div>
+        <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/></svg></div><div class="stat-v">12</div><div class="stat-l">Bulk Upload Pending</div></div>
+        <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/></svg></div><div class="stat-v">15</div><div class="stat-l">Digital Leads Pending</div></div>
+      </div>
+      <div class="esc-ban"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><p><strong>5 leads auto-escalated:</strong> Counsellors missed scheduled follow-ups. Escalated to Manager → Head of Marketing.</p></div>
+      <div class="card"><div class="ch"><h3>Today's Follow-Up Schedule</h3></div>
+        <div class="cb np"><table class="dt"><thead><tr><th>Student</th><th>Program / University</th><th>Counsellor</th><th>Scheduled</th><th>Source</th><th>Priority</th><th>Escalated</th><th>Action</th></tr></thead><tbody id="fuBody"></tbody></table></div></div>
+    </div>
+
+    <!-- ════ COUNSELLORS ════ -->
+    <div class="page-s" id="page-counsellors">
+      <div class="toolbar">
+        <button class="btn btn-p" onclick="openModal('counsellorModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Counsellor</button>
+        <button class="btn btn-s" onclick="openModal('slabModal')">Manage Slabs</button>
+      </div>
+      <div class="g3 mb6" id="counsellorCards"></div>
+      <div class="card"><div class="ch"><h3>Counsellor Target & Commission Management</h3></div>
+        <div class="cb np"><table class="dt"><thead><tr><th>Counsellor</th><th>University</th><th>Monthly Target</th><th>Enrolled</th><th>Progress</th><th>Slab</th><th>Commission</th><th>Actions</th></tr></thead><tbody id="counsellorTable"></tbody></table></div></div>
+    </div>
+
+    <!-- ════ AGENTS ════ -->
+    <div class="page-s" id="page-agents">
+      <div class="slab-elig"><strong>✅ Payment Eligibility Criteria (Mandatory)</strong><ul>
+        <li>New Students: Registration OR Full payment OR Semester 1 OR 1st monthly instalment</li>
+        <li>Student Referrals: All outstanding payments must be fully cleared</li>
+        <li>Incomplete records are excluded until all requirements are fulfilled</li>
+      </ul></div>
+      <div class="toolbar">
+        <div class="srch"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" placeholder="Search agents…" id="agentSearch" oninput="renderAgents()"></div>
+        <button class="btn btn-p" onclick="openModal('agentModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Agent</button>
+        <button class="btn btn-s" onclick="showToast('Commission report sent to Finance Team','success')"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Export Commission Report</button>
+      </div>
+      <div class="card"><div class="cb np"><table class="dt"><thead><tr><th>Agent / Source</th><th>Type</th><th>University</th><th>Referred</th><th>Eligible</th><th>Commission Basis</th><th>Eligibility</th><th>Approved</th><th>Actions</th></tr></thead><tbody id="agentsBody"></tbody></table></div></div>
+    </div>
+
+    <!-- ════ REPORTS ════ -->
+    <div class="page-s" id="page-reports">
+      <div class="toolbar">
+        <button class="btn btn-s" onclick="showToast('CSV exported','success')"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Export CSV</button>
+        <button class="btn btn-s" onclick="showToast('Weekly report sent to Finance & Departments','success')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Send Weekly Report</button>
+      </div>
+      <div class="g2 mb6">
+        <div class="card"><div class="ch"><h3>Lead Status Report</h3></div><div class="cb np"><table class="dt"><thead><tr><th>Status</th><th>Count</th><th>% of Total</th></tr></thead><tbody id="rptStatusBody"></tbody></table></div></div>
+        <div class="card"><div class="ch"><h3>Lead Source Performance</h3></div><div class="cb np"><table class="dt"><thead><tr><th>Source</th><th>Leads</th><th>Converted</th><th>Conv. Rate</th></tr></thead><tbody id="rptSrcBody"></tbody></table></div></div>
+        <div class="card"><div class="ch"><h3>University-wise Lead Distribution</h3></div><div class="cb"><div class="chart-wrap"><canvas id="rptUniChart"></canvas></div></div></div>
+        <div class="card"><div class="ch"><h3>Follow-Up Performance</h3></div><div class="cb np"><table class="dt"><thead><tr><th>Counsellor</th><th>Assigned</th><th>Done</th><th>Missed</th><th>Escalated</th></tr></thead><tbody id="rptFUBody"></tbody></table></div></div>
+        <div class="card" style="grid-column:1/-1"><div class="ch"><h3>Counsellor Target Summary</h3></div><div class="cb np"><table class="dt"><thead><tr><th>Counsellor</th><th>University</th><th>Monthly Target</th><th>Enrolled</th><th>Remaining</th><th>Conv. Rate</th><th>Slab Reached</th></tr></thead><tbody id="rptCounsellorBody"></tbody></table></div></div>
+        <div class="card" style="grid-column:1/-1"><div class="ch"><h3>Commission Eligible List — Agents, Students, Counsellors</h3><button class="btn btn-s btn-sm" onclick="showToast('Approval requested from Head of Marketing','success')">Request Approval</button></div><div class="cb np"><table class="dt"><thead><tr><th>Name</th><th>Type</th><th>University</th><th>Students</th><th>Commission</th><th>Eligibility</th><th>Approval Status</th></tr></thead><tbody id="rptCommBody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ════ MASTER DATA ════ -->
+    <div class="page-s" id="page-master">
+      <div class="g2">
+        <div class="card"><div class="ch"><h3>Universities</h3><button class="btn btn-p btn-sm" onclick="openMDAdd('universities')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add</button></div><div class="cb"><div id="md-universities"></div></div></div>
+        <div class="card"><div class="ch"><h3>Programs</h3><button class="btn btn-p btn-sm" onclick="openMDAdd('programs')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add</button></div><div class="cb"><div id="md-programs"></div></div></div>
+        <div class="card"><div class="ch"><h3>Lead Sources</h3><button class="btn btn-p btn-sm" onclick="openMDAdd('sources')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add</button></div><div class="cb"><div id="md-sources"></div></div></div>
+        <div class="card"><div class="ch"><h3>Commission Types</h3><button class="btn btn-p btn-sm" onclick="openMDAdd('commTypes')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add</button></div><div class="cb"><div id="md-commTypes"></div></div></div>
+        <div class="card"><div class="ch"><h3>Lead Status Workflow</h3></div><div class="cb">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Status progression is controlled. Qualified leads cannot revert to Open.</p>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge b-open">Open</span><span style="color:var(--muted)">→</span>
+            <span class="badge b-qual">Qualified</span><span style="color:var(--muted)">→</span>
+            <span class="badge b-conv">Converted</span>
+          </div>
+          <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+            <span class="badge b-open">Open</span><span style="color:var(--muted)">→</span>
+            <span class="badge b-drop">Dropped</span>
+          </div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Escalation Policy</h3></div><div class="cb">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Auto-escalation triggers when a counsellor misses a scheduled follow-up or ignores new leads within the day.</p>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge b-amber">Counsellor</span><span style="color:var(--muted)">→</span>
+            <span class="badge b-red">Manager</span><span style="color:var(--muted)">→</span>
+            <span class="badge b-purple">Head of Marketing</span>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ════ USERS ════ -->
+    <div class="page-s" id="page-users">
+      <div class="toolbar">
+        <button class="btn btn-p" onclick="openModal('userModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add User</button>
+      </div>
+      <div class="card"><div class="cb np"><table class="dt"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>University</th><th>Counsellor Link</th><th>Status</th><th>Actions</th></tr></thead><tbody id="usersBody"></tbody></table></div></div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══════════════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════════════ -->
+
+<!-- Add / Edit Lead -->
+<div class="modal-ov" id="leadModal">
+  <div class="modal modal-lg">
+    <div class="mh"><h3 id="leadModalTitle">Add New Lead</h3><button class="mc" onclick="closeModal('leadModal')">×</button></div>
+    <div class="mb-body">
+      <div class="fr"><div class="fg"><label>First Name</label><input class="fc" id="lm-fname" placeholder="First name"></div><div class="fg"><label>Last Name</label><input class="fc" id="lm-lname" placeholder="Last name"></div></div>
+      <div class="fr"><div class="fg"><label>Email</label><input class="fc" id="lm-email" type="email" placeholder="email@example.com"></div><div class="fg"><label>Phone</label><input class="fc" id="lm-phone" placeholder="+94 7XX XXX XXX"></div></div>
+      <div class="fr">
+        <div class="fg"><label>University</label><select class="fc" id="lm-uni"></select></div>
+        <div class="fg"><label>Program</label><select class="fc" id="lm-prog"></select></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Lead Source</label><select class="fc" id="lm-src" onchange="handleSrcChange()"><option value="">Select Source</option></select></div>
+        <div class="fg" id="lm-refField" style="display:none"><label id="lm-refLabel">Select Referrer</label><select class="fc" id="lm-ref"></select></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Assigned Counsellor</label><select class="fc" id="lm-coun"></select></div>
+        <div class="fg"><label>Status</label><select class="fc" id="lm-status"><option>Open</option></select></div>
+      </div>
+      <div class="fg"><label>Notes</label><textarea class="fc" id="lm-notes" rows="3" placeholder="Initial notes…"></textarea></div>
+      <input type="hidden" id="lm-editId">
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeModal('leadModal')">Cancel</button><button class="btn btn-p" onclick="saveLead()">Save Lead</button></div>
+  </div>
+</div>
+
+<!-- Lead Detail / Status Update -->
+<div class="modal-ov" id="leadDetailModal">
+  <div class="modal modal-lg">
+    <div class="mh"><h3 id="ldTitle">Lead Details</h3><button class="mc" onclick="closeModal('leadDetailModal')">×</button></div>
+    <div class="mb-body" id="ldBody"></div>
+    <div class="mf"><button class="btn btn-g" onclick="closeModal('leadDetailModal')">Close</button><button class="btn btn-p" onclick="saveLeadStatus()">Save Changes</button></div>
+  </div>
+</div>
+
+<!-- Counsellor Modal -->
+<div class="modal-ov" id="counsellorModal">
+  <div class="modal">
+    <div class="mh"><h3>Add Counsellor</h3><button class="mc" onclick="closeModal('counsellorModal')">×</button></div>
+    <div class="mb-body">
+      <div class="fg"><label>Full Name</label><input class="fc" id="cm-name" placeholder="Counsellor name"></div>
+      <div class="fr">
+        <div class="fg"><label>University</label><select class="fc" id="cm-uni"></select></div>
+        <div class="fg"><label>Monthly Target</label><input class="fc" type="number" id="cm-target" placeholder="e.g. 30" min="1"></div>
+      </div>
+      <div class="fg"><label>Email</label><input class="fc" id="cm-email" type="email" placeholder="counsellor@uni.lk"></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeModal('counsellorModal')">Cancel</button><button class="btn btn-p" onclick="saveCounsellor()">Save</button></div>
+  </div>
+</div>
+
+<!-- Slab Management -->
+<div class="modal-ov" id="slabModal">
+  <div class="modal">
+    <div class="mh"><h3>Commission Slab Management</h3><button class="mc" onclick="closeModal('slabModal')">×</button></div>
+    <div class="mb-body">
+      <div class="fg"><label>Counsellor</label><select class="fc" id="sm-coun"></select></div>
+      <div class="fg"><label>Monthly Target</label><input class="fc" type="number" id="sm-target" placeholder="e.g. 30"></div>
+      <p style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Commission Slabs</p>
+      <table class="slab-t mb4">
+        <thead><tr><th>Students Range</th><th>Commission %</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td>0 – 10</td><td>No Commission</td><td>—</td></tr>
+          <tr><td>11 – 20</td><td><input class="fc" type="number" id="sm-s1" value="2" style="width:70px;padding:4px 8px"></td><td>Percentage</td></tr>
+          <tr><td>21 – 30</td><td><input class="fc" type="number" id="sm-s2" value="5" style="width:70px;padding:4px 8px"></td><td>Percentage</td></tr>
+          <tr><td>30+</td><td><input class="fc" type="number" id="sm-s3" value="7" style="width:70px;padding:4px 8px"></td><td>Percentage</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeModal('slabModal')">Cancel</button><button class="btn btn-p" onclick="saveSlabs()">Save Slabs</button></div>
+  </div>
+</div>
+
+<!-- Agent Modal -->
+<div class="modal-ov" id="agentModal">
+  <div class="modal">
+    <div class="mh"><h3>Add Agent / Commission Source</h3><button class="mc" onclick="closeModal('agentModal')">×</button></div>
+    <div class="mb-body">
+      <div class="fg"><label>Name</label><input class="fc" id="am-name" placeholder="Agent or referrer name"></div>
+      <div class="fr">
+        <div class="fg"><label>Type</label><select class="fc" id="am-type"><option>External Agent</option><option>Student Referral</option><option>Staff Referral</option></select></div>
+        <div class="fg"><label>University</label><select class="fc" id="am-uni"></select></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Commission Type</label><select class="fc" id="am-ctype"><option>Percentage (%)</option><option>Fixed Amount (LKR)</option></select></div>
+        <div class="fg"><label>Commission Value</label><input class="fc" type="number" id="am-cval" placeholder="e.g. 5 or 15000"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeModal('agentModal')">Cancel</button><button class="btn btn-p" onclick="saveAgent()">Save Agent</button></div>
+  </div>
+</div>
+
+<!-- User Modal -->
+<div class="modal-ov" id="userModal">
+  <div class="modal">
+    <div class="mh"><h3>Add User Account</h3><button class="mc" onclick="closeModal('userModal')">×</button></div>
+    <div class="mb-body">
+      <div class="fg"><label>Full Name</label><input class="fc" id="um-name" placeholder="Full name"></div>
+      <div class="fg"><label>Email</label><input class="fc" id="um-email" type="email" placeholder="user@uni.lk"></div>
+      <div class="fg"><label>Password</label><input class="fc" id="um-pass" type="password" placeholder="Set password"></div>
+      <div class="fr">
+        <div class="fg"><label>Role</label><select class="fc" id="um-role" onchange="toggleCounsellorField()">
+          <option value="ceo">CEO</option>
+          <option value="hom">Head of Marketing</option>
+          <option value="manager">Manager</option>
+          <option value="counsellor">Counsellor</option>
+        </select></div>
+        <div class="fg"><label>University (if counsellor/manager)</label><select class="fc" id="um-uni"><option value="">All</option></select></div>
+      </div>
+      <div class="fg" id="um-coun-field" style="display:none">
+        <label>Link to Counsellor Record</label>
+        <select class="fc" id="um-coun-link"><option value="">— Not linked —</option></select>
+        <p style="font-size:11px;color:var(--muted);margin-top:4px">Required so this user only sees their assigned leads.</p>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeModal('userModal')">Cancel</button><button class="btn btn-p" onclick="saveUser()">Create User</button></div>
+  </div>
+</div>
+
+<!-- Master Data Add Modal -->
+<div class="modal-ov" id="mdModal">
+  <div class="modal" style="width:420px">
+    <div class="mh"><h3 id="mdModalTitle">Add Item</h3><button class="mc" onclick="closeModal('mdModal')">×</button></div>
+    <div class="mb-body">
+      <div class="fg"><label id="mdModalLabel">Name</label><input class="fc" id="mdModalInput" placeholder="Enter value…"></div>
+    </div>
+    <div class="mf"><button class="btn btn-g" onclick="closeModal('mdModal')">Cancel</button><button class="btn btn-p" onclick="saveMDItem()">Add</button></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DEFAULT SEED DATA
+// ══════════════════════════════════════════════════════════
+const SEED = {
+  masterData: {
+    universities: ['UNI-1','UNI-2','UNI-3','UNI-4'],
+    programs: ['Software Engineering','Business Management','Fashion Design','Computing','Law','Data Science','Nursing'],
+    sources: ['Agent','Student Referral','Staff Referral','Facebook','Website','Instagram','Walk-in'],
+    commTypes: ['Percentage (%)','Fixed Amount (LKR)']
+  },
+  users: [
+    {id:'u1',name:'Prof. Kamal Perera',email:'ceo@uni.lk',password:'demo',role:'ceo',uni:'',counsellorId:''},
+    {id:'u2',name:'Sanduni Abeyrathne',email:'hom@uni.lk',password:'demo',role:'hom',uni:'',counsellorId:''},
+    {id:'u3',name:'Ruchira Mendis',email:'manager@uni.lk',password:'demo',role:'manager',uni:'UNI-1',counsellorId:''},
+    {id:'u4',name:'Kavindra Ranasinghe',email:'counsellor@uni.lk',password:'demo',role:'counsellor',uni:'UNI-1',counsellorId:'c1'},
+    {id:'u5',name:'Maleesha Perera',email:'counsellor2@uni.lk',password:'demo',role:'counsellor',uni:'UNI-2',counsellorId:'c2'},
+    {id:'u6',name:'Sunera Amarasinghe',email:'counsellor3@uni.lk',password:'demo',role:'counsellor',uni:'UNI-3',counsellorId:'c3'},
+    {id:'u7',name:'Amara Jayawardene',email:'counsellor4@uni.lk',password:'demo',role:'counsellor',uni:'UNI-4',counsellorId:'c4'},
+  ],
+  counsellors: [
+    {id:'c1',name:'K. Ranasinghe',uni:'UNI-1',target:30,enrolled:24,leads:62,slabS1:2,slabS2:5,slabS3:7,email:'counsellor@uni.lk'},
+    {id:'c2',name:'M. Perera',uni:'UNI-2',target:25,enrolled:19,leads:48,slabS1:2,slabS2:5,slabS3:7,email:'counsellor2@uni.lk'},
+    {id:'c3',name:'S. Amarasinghe',uni:'UNI-3',target:20,enrolled:31,leads:55,slabS1:2,slabS2:5,slabS3:7,email:'counsellor3@uni.lk'},
+    {id:'c4',name:'A. Jayawardene',uni:'UNI-4',target:20,enrolled:10,leads:35,slabS1:2,slabS2:5,slabS3:7,email:'counsellor4@uni.lk'},
+  ],
+  agents: [
+    {id:'a1',name:'Prestige Education Lanka',type:'External Agent',uni:'UNI-1',referred:28,eligible:25,commType:'Percentage (%)',commVal:'3',status:'Eligible',approved:true},
+    {id:'a2',name:'EduPath Consultants',type:'External Agent',uni:'UNI-2',referred:14,eligible:12,commType:'Fixed Amount (LKR)',commVal:'15000',status:'Eligible',approved:true},
+    {id:'a3',name:'S-1042 — Ravindu Perera',type:'Student Referral',uni:'UNI-1',referred:3,eligible:2,commType:'Fixed Amount (LKR)',commVal:'5000',status:'Eligible',approved:false},
+    {id:'a4',name:'S-1078 — Chamari Silva',type:'Student Referral',uni:'UNI-3',referred:2,eligible:0,commType:'Fixed Amount (LKR)',commVal:'5000',status:'Pending Payment',approved:false},
+    {id:'a5',name:'Mr. Nimal Jayakody',type:'Staff Referral',uni:'UNI-2',referred:4,eligible:4,commType:'Percentage (%)',commVal:'2',status:'Eligible',approved:true},
+    {id:'a6',name:'Global Links Pvt Ltd',type:'External Agent',uni:'UNI-4',referred:8,eligible:5,commType:'Fixed Amount (LKR)',commVal:'20000',status:'Partially Eligible',approved:false},
+  ],
+  leads: [
+    {id:'l1',fname:'Piyumi',lname:'Ranathunga',email:'piyumi@gmail.com',phone:'+94771234567',uni:'UNI-1',program:'Software Engineering',source:'Agent',counsellor:'c1',status:'Open',followup:'25 Apr 2025',notes:'Interested in evening batch',priority:'High',escalated:false,active:true},
+    {id:'l2',fname:'Sahan',lname:'Dissanayake',email:'sahan@email.com',phone:'+94772345678',uni:'UNI-2',program:'Business Management',source:'Student Referral',counsellor:'c2',status:'Qualified',followup:'26 Apr 2025',notes:'',priority:'Medium',escalated:false,active:true},
+    {id:'l3',fname:'Amali',lname:'Fernando',email:'amali@mail.com',phone:'+94773456789',uni:'UNI-3',program:'Fashion Design',source:'Facebook',counsellor:'c3',status:'Converted',followup:'—',notes:'Enrolled in Sept intake',priority:'Low',escalated:false,active:true},
+    {id:'l4',fname:'Kasun',lname:'Wickramasinghe',email:'kasun@mail.com',phone:'+94774567890',uni:'UNI-4',program:'Computing',source:'Website',counsellor:'c4',status:'Open',followup:'25 Apr 2025',notes:'',priority:'High',escalated:true,active:true},
+    {id:'l5',fname:'Devindi',lname:'Bandara',email:'devindi@mail.com',phone:'+94775678901',uni:'UNI-2',program:'Law',source:'Staff Referral',counsellor:'c2',status:'Qualified',followup:'27 Apr 2025',notes:'',priority:'Medium',escalated:false,active:true},
+    {id:'l6',fname:'Malith',lname:'Jayawardene',email:'malith@mail.com',phone:'+94776789012',uni:'UNI-1',program:'Software Engineering',source:'Agent',counsellor:'c1',status:'Converted',followup:'—',notes:'',priority:'Low',escalated:false,active:true},
+    {id:'l7',fname:'Thilini',lname:'Kumari',email:'thilini@mail.com',phone:'+94777890123',uni:'UNI-3',program:'Business Management',source:'Facebook',counsellor:'c3',status:'Open',followup:'25 Apr 2025',notes:'',priority:'High',escalated:true,active:true},
+    {id:'l8',fname:'Ruwan',lname:'Senanayake',email:'ruwan@mail.com',phone:'+94778901234',uni:'UNI-1',program:'Computing',source:'Agent',counsellor:'c1',status:'Dropped',followup:'—',notes:'Not reachable',priority:'Low',escalated:false,active:true},
+    {id:'l9',fname:'Isuri',lname:'Herath',email:'isuri@mail.com',phone:'+94779012345',uni:'UNI-3',program:'Fashion Design',source:'Website',counsellor:'c3',status:'Open',followup:'26 Apr 2025',notes:'',priority:'Medium',escalated:false,active:true},
+    {id:'l10',fname:'Chandana',lname:'Perera',email:'chandana@mail.com',phone:'+94770123456',uni:'UNI-4',program:'Law',source:'Student Referral',counsellor:'c4',status:'Qualified',followup:'28 Apr 2025',notes:'',priority:'Medium',escalated:false,active:true},
+  ],
+  followups: [
+    {student:'Piyumi Ranathunga',program:'Software Eng',uni:'UNI-1',counsellor:'K. Ranasinghe',counsellorId:'c1',time:'09:00 AM',source:'Agent',priority:'High',escalated:false},
+    {student:'Malith Jayawardene',program:'Software Eng',uni:'UNI-1',counsellor:'K. Ranasinghe',counsellorId:'c1',time:'11:30 AM',source:'Agent',priority:'Medium',escalated:false},
+    {student:'Sahan Dissanayake',program:'Business Mgt',uni:'UNI-2',counsellor:'M. Perera',counsellorId:'c2',time:'10:00 AM',source:'Student Referral',priority:'Medium',escalated:false},
+    {student:'Devindi Bandara',program:'Law',uni:'UNI-2',counsellor:'M. Perera',counsellorId:'c2',time:'02:30 PM',source:'Staff Referral',priority:'Medium',escalated:false},
+    {student:'Thilini Kumari',program:'Business Mgt',uni:'UNI-3',counsellor:'S. Amarasinghe',counsellorId:'c3',time:'11:00 AM',source:'Facebook',priority:'High',escalated:true},
+    {student:'Isuri Herath',program:'Fashion Design',uni:'UNI-3',counsellor:'S. Amarasinghe',counsellorId:'c3',time:'02:00 PM',source:'Website',priority:'Medium',escalated:false},
+    {student:'Kasun Wickramasinghe',program:'Computing',uni:'UNI-4',counsellor:'A. Jayawardene',counsellorId:'c4',time:'10:30 AM',source:'Website',priority:'High',escalated:true},
+    {student:'Chandana Perera',program:'Law',uni:'UNI-4',counsellor:'A. Jayawardene',counsellorId:'c4',time:'03:30 PM',source:'Student Referral',priority:'Medium',escalated:false},
+  ]
+};
+
+// ══════════════════════════════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════════════════════════════
+const LS = {
+  get(k){ try{ const v=localStorage.getItem('uniCRM_'+k); return v?JSON.parse(v):null; }catch{return null;} },
+  set(k,v){ try{ localStorage.setItem('uniCRM_'+k,JSON.stringify(v)); }catch{} },
+  clear(k){ localStorage.removeItem('uniCRM_'+k); }
+};
+
+function loadOrSeed(key){ const v=LS.get(key); if(v) return v; LS.set(key,SEED[key]); return SEED[key]; }
+
+// Live data references
+let MD, USERS, COUNSELLORS, AGENTS, LEADS, FOLLOWUPS;
+
+const DATA_VERSION = '3'; // bump this to force a re-seed when schema changes
+
+function loadAll(){
+  const storedVer = localStorage.getItem('uniCRM_version');
+  if(storedVer !== DATA_VERSION){
+    // Schema changed — wipe old data and re-seed cleanly
+    ['masterData','users','counsellors','agents','leads','followups'].forEach(k=>LS.clear(k));
+    localStorage.setItem('uniCRM_version', DATA_VERSION);
+  }
+  MD = loadOrSeed('masterData');
+  USERS = loadOrSeed('users');
+  COUNSELLORS = loadOrSeed('counsellors');
+  AGENTS = loadOrSeed('agents');
+  LEADS = loadOrSeed('leads');
+  FOLLOWUPS = loadOrSeed('followups');
+}
+
+function save(k){ LS.set(k, window[k.toUpperCase()]||eval(k)); }
+
+// Returns only the leads the current user is allowed to see.
+// counsellor  → only leads where lead.counsellor === currentUser.counsellorId
+// manager     → all leads for currentUser.uni
+// ceo / hom   → all active leads
+function getVisibleLeads(){
+  const all = LEADS.filter(l=>l.active);
+  if(currentUser.role==='counsellor'){
+    return all.filter(l=>l.counsellor===currentUser.counsellorId);
+  }
+  if(currentUser.role==='manager'){
+    return all.filter(l=>l.uni===currentUser.uni);
+  }
+  return all;
+}
+
+// ══════════════════════════════════════════════════════════
+// ROLES & ACCESS
+// ══════════════════════════════════════════════════════════
+const ROLES = {
+  ceo:       {label:'CEO',          nav:['dashboard','leads','pipeline','followups','counsellors','agents','reports','master','users']},
+  hom:       {label:'Head of Marketing', nav:['dashboard','leads','pipeline','followups','counsellors','agents','reports','master','users']},
+  manager:   {label:'Manager',      nav:['dashboard','leads','pipeline','followups','counsellors','reports']},
+  counsellor:{label:'Counsellor',   nav:['dashboard','leads','pipeline','followups']},
+};
+
+const NAV_DEFS = [
+  {id:'dashboard', label:'Dashboard', icon:'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'},
+  {id:'leads',     label:'Leads',     icon:'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z'},
+  {id:'pipeline',  label:'Pipeline',  icon:'M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z'},
+  {id:'followups', label:'Follow-Ups',icon:'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z'},
+  {id:'counsellors',label:'Counsellors',icon:'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'},
+  {id:'agents',    label:'Agents',    icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z'},
+  {id:'reports',   label:'Reports',   icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z'},
+  {id:'master',    label:'Master Data',icon:'M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z'},
+  {id:'users',     label:'Users',     icon:'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z'},
+];
+
+let currentUser = null;
+
+// ══════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════
+const QUICK = {
+  ceo:         {email:'ceo@uni.lk',         pass:'demo'},
+  hom:         {email:'hom@uni.lk',          pass:'demo'},
+  manager:     {email:'manager@uni.lk',      pass:'demo'},
+  counsellor:  {email:'counsellor@uni.lk',   pass:'demo'},
+  counsellor2: {email:'counsellor2@uni.lk',  pass:'demo'},
+  counsellor3: {email:'counsellor3@uni.lk',  pass:'demo'},
+  counsellor4: {email:'counsellor4@uni.lk',  pass:'demo'},
+};
+
+function quickLogin(role){
+  document.getElementById('li-user').value = QUICK[role].email;
+  document.getElementById('li-pass').value = QUICK[role].pass;
+  doLogin();
+}
+
+function doLogin(){
+  const email = document.getElementById('li-user').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  const u = USERS.find(x=>x.email===email && x.password===pass);
+  if(!u){ showToast('Invalid credentials','error'); return; }
+  currentUser = u;
+  LS.set('session',{id:u.id});
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  initApp();
+}
+
+function doLogout(){
+  LS.clear('session');
+  currentUser=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('li-pass').value='';
+  destroyCharts();
+}
+
+function restoreSession(){
+  const s = LS.get('session');
+  if(!s) return;
+  const u = USERS.find(x=>x.id===s.id);
+  if(!u) return;
+  currentUser = u;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  initApp();
+}
+
+// ══════════════════════════════════════════════════════════
+// APP INIT
+// ══════════════════════════════════════════════════════════
+function initApp(){
+  buildNav();
+  buildUserBar();
+  populateSelects();
+  navigate('dashboard');
+}
+
+function buildNav(){
+  const role = ROLES[currentUser.role];
+  let html = '';
+  const groups = [
+    {label:'Main',items:['dashboard','leads','pipeline','followups']},
+    {label:'Management',items:['counsellors','agents']},
+    {label:'Insights',items:['reports']},
+    {label:'Admin',items:['master','users']},
+  ];
+  groups.forEach(g=>{
+    const items = g.items.filter(i=>role.nav.includes(i));
+    if(!items.length) return;
+    html += `<div class="nav-sec">${g.label}</div>`;
+    items.forEach(id=>{
+      const d = NAV_DEFS.find(x=>x.id===id);
+      html += `<button class="nav-i" id="nav-${d.id}" onclick="navigate('${d.id}')"><svg viewBox="0 0 24 24"><path d="${d.icon}"/></svg>${d.label}</button>`;
+    });
+  });
+  document.getElementById('sbNav').innerHTML = html;
+}
+
+function buildUserBar(){
+  const u = currentUser;
+  document.getElementById('uAvatar').textContent = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('uName').textContent = u.name;
+  document.getElementById('uRole').textContent = ROLES[u.role].label + (u.uni?' — '+u.uni:'');
+}
+
+function populateSelects(){
+  // university dropdowns
+  ['lm-uni','cm-uni','am-uni','um-uni'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const blank = id==='um-uni' ? '<option value="">All</option>' : '';
+    el.innerHTML = blank + MD.universities.map(u=>`<option>${u}</option>`).join('');
+  });
+  // lead filter
+  const lUni = document.getElementById('lUni');
+  if(lUni) lUni.innerHTML = '<option value="">All Universities</option>' + MD.universities.map(u=>`<option>${u}</option>`).join('');
+  // source dropdown in lead modal
+  const lmSrc = document.getElementById('lm-src');
+  if(lmSrc) lmSrc.innerHTML = '<option value="">Select Source</option>' + MD.sources.map(s=>`<option>${s}</option>`).join('');
+  // counsellor dropdown in lead modal — counsellors can only assign to themselves
+  const lmCoun = document.getElementById('lm-coun');
+  if(lmCoun){
+    if(currentUser.role==='counsellor'){
+      const myC = COUNSELLORS.find(c=>c.id===currentUser.counsellorId);
+      lmCoun.innerHTML = myC ? `<option value="${myC.id}">${myC.name} (${myC.uni})</option>` : '<option value="">— No counsellor linked —</option>';
+      lmCoun.disabled = true;
+    } else {
+      lmCoun.innerHTML = COUNSELLORS.map(c=>`<option value="${c.id}">${c.name} (${c.uni})</option>`).join('');
+      lmCoun.disabled = false;
+    }
+  }
+  // slab counsellor
+  const smCoun = document.getElementById('sm-coun');
+  if(smCoun) smCoun.innerHTML = COUNSELLORS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+let chartInstances = {};
+function destroyCharts(){ Object.values(chartInstances).forEach(c=>{try{c.destroy()}catch{}}); chartInstances={}; }
+
+const PAGE_TITLES = {dashboard:'Dashboard',leads:'Lead Management',pipeline:'Enrolment Pipeline',followups:'Follow-Up Tracker',counsellors:'Counsellor Management',agents:'Agent & Commission Management',reports:'Reports & Analytics',master:'Master Data',users:'User Accounts'};
+
+function navigate(page){
+  document.querySelectorAll('.page-s').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('active'));
+  const ps = document.getElementById('page-'+page);
+  if(!ps) return;
+  // Check role access
+  if(!ROLES[currentUser.role].nav.includes(page)){
+    ps.innerHTML = `<div class="perm-denied"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><h3>Access Restricted</h3><p>You do not have permission to view this section.</p></div>`;
+  }
+  ps.classList.add('active');
+  const nav = document.getElementById('nav-'+page);
+  if(nav) nav.classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[page]||page;
+  // Build topbar actions
+  buildTopbarActions(page);
+  // Render page
+  if(page==='dashboard') renderDashboard();
+  if(page==='leads') { renderLeads(); renderDigitalLeads(); }
+  if(page==='pipeline') renderPipeline();
+  if(page==='followups') renderFollowUps();
+  if(page==='counsellors') renderCounsellorPage();
+  if(page==='agents') renderAgents();
+  if(page==='reports') renderReports();
+  if(page==='master') renderMasterData();
+  if(page==='users') renderUsers();
+}
+
+function buildTopbarActions(page){
+  const el = document.getElementById('topbarActions');
+  const acts = {
+    dashboard: `<button class="btn btn-g btn-sm" onclick="showToast('Weekly report sent to Finance & Departments','success')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Send Weekly Report</button><button class="btn btn-p" onclick="openLeadModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Lead</button>`,
+    leads: `<button class="btn btn-p" onclick="openLeadModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Lead</button>`,
+    agents: `<button class="btn btn-p" onclick="openModal('agentModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Agent</button>`,
+  };
+  el.innerHTML = acts[page]||'';
+}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════
+function renderDashboard(){
+  const active = getVisibleLeads();
+  const total = active.length;
+  const conv = active.filter(l=>l.status==='Converted').length;
+  const rate = total ? Math.round(conv/total*100) : 0;
+  const esc = active.filter(l=>l.escalated).length;
+
+  // Scope follow-ups by role for dashboard stat
+  let visibleFU = FOLLOWUPS;
+  if(currentUser.role==='counsellor'){
+    visibleFU = FOLLOWUPS.filter(f=>f.counsellorId===currentUser.counsellorId);
+  } else if(currentUser.role==='manager'){
+    visibleFU = FOLLOWUPS.filter(f=>f.uni===currentUser.uni);
+  }
+  const fuCount = visibleFU.length;
+
+  document.getElementById('dashStats').innerHTML = `
+    <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+      <div class="stat-v">${total}</div><div class="stat-l">Total Leads</div><div class="stat-d">↑ ${active.filter(l=>l.status==='Open').length} open</div></div>
+    <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <div class="stat-v">${conv}</div><div class="stat-l">Enrolled Students</div><div class="stat-d">${rate}% conversion</div></div>
+    <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg></div>
+      <div class="stat-v">${rate}%</div><div class="stat-l">Conversion Rate</div><div class="stat-d">↑ 4% vs last month</div></div>
+    <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg></div>
+      <div class="stat-v">${fuCount}</div><div class="stat-l">Follow-Up Due Today</div><div class="stat-d neg">↑ ${esc} escalations</div></div>`;
+
+  const escEl = document.getElementById('dashEsc');
+  if(esc>0) escEl.innerHTML=`<div class="esc-ban"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><p><strong>Auto-Escalation Alert:</strong> ${esc} leads have exceeded follow-up SLA — escalated to Manager → Head of Marketing.</p></div>`;
+  else escEl.innerHTML='';
+
+  buildDashCharts();
+  renderDashTargets();
+  renderCommEligible();
+}
+
+function buildDashCharts(){
+  destroyCharts();
+  const active = getVisibleLeads();
+  const red='#C8102E',pa=['#C8102E','#1A6FA1','#0E7A45','#D4820A','#7B4FA6','#E05A00','#00869E'];
+
+  // Source chart
+  const srcCounts = {};
+  active.forEach(l=>{ srcCounts[l.source]=(srcCounts[l.source]||0)+1; });
+  chartInstances.src = new Chart(document.getElementById('cSourceChart'),{type:'doughnut',data:{labels:Object.keys(srcCounts),datasets:[{data:Object.values(srcCounts),backgroundColor:pa,borderWidth:2,borderColor:'#fff'}]},options:{plugins:{legend:{position:'right'}},cutout:'60%'}});
+
+  // Funnel
+  const statuses = ['Open','Qualified','Converted','Dropped'];
+  const counts = statuses.map(s=>active.filter(l=>l.status===s).length);
+  chartInstances.fun = new Chart(document.getElementById('cFunnelChart'),{type:'bar',data:{labels:statuses,datasets:[{data:counts,backgroundColor:['#1A6FA1','#D4820A','#0E7A45','#A09090'],borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+
+  // Monthly trend (mock)
+  chartInstances.trend = new Chart(document.getElementById('cTrendChart'),{type:'line',data:{labels:['Nov','Dec','Jan','Feb','Mar','Apr'],datasets:[{label:'Enrolments',data:[12,18,22,16,28,counts[2]],borderColor:red,backgroundColor:'rgba(200,16,46,.12)',fill:true,tension:.4,borderWidth:2,pointBackgroundColor:red}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+
+  // University
+  const uniCounts = {};
+  MD.universities.forEach(u=>{ uniCounts[u]=active.filter(l=>l.uni===u).length; });
+  chartInstances.uni = new Chart(document.getElementById('cUniChart'),{type:'bar',data:{labels:Object.keys(uniCounts),datasets:[{data:Object.values(uniCounts),backgroundColor:pa,borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+}
+
+function renderDashTargets(){
+  document.getElementById('dashTargets').innerHTML = COUNSELLORS.slice(0,3).map(c=>{
+    const pct = Math.min(100,Math.round(c.enrolled/c.target*100));
+    const slab = getSlabLabel(c);
+    return `<div class="tc-card">
+      <div class="tc-top"><div><div class="tc-name">${c.name}</div><div class="tc-uni">${c.uni}</div></div>
+      <div><div class="tc-num">${c.enrolled}</div><div class="tc-of">/ ${c.target}</div></div></div>
+      <div class="prog"><div class="prog-f ${pct>=100?'g':pct>=60?'':'a'}" style="width:${pct}%"></div></div>
+      <div class="tc-conv">${pct}% of target · ${slab}</div></div>`;
+  }).join('');
+}
+
+function getSlabLabel(c){
+  const e=c.enrolled;
+  if(e<=10) return 'No Commission';
+  if(e<=20) return `Slab 11-20 → ${c.slabS1}%`;
+  if(e<=30) return `Slab 21-30 → ${c.slabS2}%`;
+  return `Slab 30+ → ${c.slabS3}%`;
+}
+
+function getCommission(c){
+  const e=c.enrolled;
+  if(e<=10) return 0;
+  if(e<=20) return c.slabS1;
+  if(e<=30) return c.slabS2;
+  return c.slabS3;
+}
+
+function renderCommEligible(){
+  const rows = [...AGENTS.filter(a=>a.status==='Eligible'), ...COUNSELLORS.filter(c=>c.enrolled>10)];
+  document.getElementById('commBody').innerHTML = [
+    ...COUNSELLORS.filter(c=>c.enrolled>10).map(c=>({name:c.name,type:'Counsellor',students:c.enrolled,slab:getSlabLabel(c),comm:getCommission(c)+'%',status:'Pending Approval',approved:false,isCoun:true,id:c.id})),
+    ...AGENTS.filter(a=>a.status==='Eligible').map(a=>({name:a.name,type:a.type,students:a.eligible,slab:'Per Agreement',comm:a.commType==='Percentage (%)'?a.commVal+'%':'LKR '+Number(a.commVal).toLocaleString(),status:a.approved?'Approved':'Pending Approval',approved:a.approved,isCoun:false,id:a.id})),
+  ].map(r=>`<tr>
+    <td><strong>${r.name}</strong></td>
+    <td><span class="badge b-blue">${r.type}</span></td>
+    <td>${r.students}</td><td>${r.slab}</td><td>${r.comm}</td>
+    <td><span class="badge ${r.approved?'b-green':'b-amber'}">${r.status}</span></td>
+    <td>${r.approved?'<span class="badge b-green">✓ Approved</span>':`<button class="btn btn-p btn-sm" onclick="approveComm('${r.id}','${r.isCoun?'coun':'agent'}')">Approve</button>`}</td>
+  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">No eligible entries</td></tr>';
+}
+
+function approveComm(id,type){
+  if(type==='agent'){
+    const a=AGENTS.find(x=>x.id===id); if(a){a.approved=true; LS.set('agents',AGENTS);}
+  }
+  renderCommEligible();
+  showToast('Commission approved and sent for processing','success');
+}
+
+// ══════════════════════════════════════════════════════════
+// LEADS
+// ══════════════════════════════════════════════════════════
+function renderLeads(){
+  const search = (document.getElementById('lSearch')||{}).value?.toLowerCase()||'';
+  const status = (document.getElementById('lStatus')||{}).value||'';
+  const uni    = (document.getElementById('lUni')||{}).value||'';
+  const src    = (document.getElementById('lSrc')||{}).value||'';
+
+  let data = getVisibleLeads();
+  if(search) data=data.filter(l=>(l.fname+' '+l.lname).toLowerCase().includes(search)||l.program.toLowerCase().includes(search));
+  if(status) data=data.filter(l=>l.status===status);
+  if(uni)    data=data.filter(l=>l.uni===uni);
+  if(src)    data=data.filter(l=>l.source===src);
+
+  const sbc = {Open:'b-open',Qualified:'b-qual',Converted:'b-conv',Dropped:'b-drop'};
+  document.getElementById('leadsBody').innerHTML = data.map(l=>`<tr>
+    <td><input type="checkbox" class="lead-chk" data-id="${l.id}"></td>
+    <td><strong>${l.fname} ${l.lname}</strong><br><small style="color:var(--muted)">${l.email}</small></td>
+    <td>${l.program}</td><td>${l.uni}</td><td>${l.source}</td>
+    <td>${(COUNSELLORS.find(c=>c.id===l.counsellor)||{}).name||'—'}</td>
+    <td><span class="badge ${sbc[l.status]||''}">${l.status}</span></td>
+    <td>${l.followup}${l.escalated?'<br><span class="badge b-red" style="margin-top:3px">Escalated</span>':''}</td>
+    <td><div class="acts">
+      <button class="btn btn-s btn-sm" onclick="openLeadDetail('${l.id}')">View</button>
+      ${l.status==='Qualified'?`<button class="btn btn-p btn-sm" onclick="convertLead('${l.id}')">Convert</button>`:''}
+      <button class="btn btn-g btn-sm" onclick="deactivateLead('${l.id}')">×</button>
+    </div></td>
+  </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">No leads found</td></tr>';
+}
+
+function renderDigitalLeads(){
+  const digital = getVisibleLeads().filter(l=>['Facebook','Website','Instagram'].includes(l.source));
+  document.getElementById('digitalLeadsBody').innerHTML = digital.map(l=>`<tr>
+    <td><strong>${l.fname} ${l.lname}</strong><br><small style="color:var(--muted)">${l.email}</small></td>
+    <td><span class="badge b-blue">${l.source}</span></td>
+    <td>${l.program} — ${l.uni}</td>
+    <td>${l.followup}</td>
+    <td>${(COUNSELLORS.find(c=>c.id===l.counsellor)||{}).name||'—'}</td>
+    <td><span class="badge ${l.status==='Open'?'b-open':l.status==='Qualified'?'b-qual':'b-conv'}">${l.status}</span></td>
+    <td><button class="btn btn-p btn-sm" onclick="openLeadDetail('${l.id}')">View</button></td>
+  </tr>`).join('');
+}
+
+function openLeadModal(editId){
+  document.getElementById('lm-editId').value = editId||'';
+  document.getElementById('leadModalTitle').textContent = editId?'Edit Lead':'Add New Lead';
+  if(editId){
+    const l = LEADS.find(x=>x.id===editId);
+    document.getElementById('lm-fname').value=l.fname;
+    document.getElementById('lm-lname').value=l.lname;
+    document.getElementById('lm-email').value=l.email;
+    document.getElementById('lm-phone').value=l.phone;
+    document.getElementById('lm-uni').value=l.uni;
+    document.getElementById('lm-prog').value=l.program;
+    document.getElementById('lm-src').value=l.source;
+    document.getElementById('lm-coun').value=l.counsellor;
+    document.getElementById('lm-notes').value=l.notes;
+  } else {
+    ['lm-fname','lm-lname','lm-email','lm-phone','lm-notes'].forEach(id=>document.getElementById(id).value='');
+  }
+  openModal('leadModal');
+}
+
+function saveLead(){
+  const fname = document.getElementById('lm-fname').value.trim();
+  const lname = document.getElementById('lm-lname').value.trim();
+  if(!fname||!lname){ showToast('Name is required','error'); return; }
+  const editId = document.getElementById('lm-editId').value;
+  const data = {
+    fname,lname,
+    email:document.getElementById('lm-email').value,
+    phone:document.getElementById('lm-phone').value,
+    uni:document.getElementById('lm-uni').value,
+    program:document.getElementById('lm-prog').value,
+    source:document.getElementById('lm-src').value,
+    counsellor:document.getElementById('lm-coun').value,
+    notes:document.getElementById('lm-notes').value,
+    status:'Open',followup:'Pending',priority:'Medium',escalated:false,active:true
+  };
+  if(editId){
+    const idx=LEADS.findIndex(l=>l.id===editId);
+    if(idx>-1) LEADS[idx]={...LEADS[idx],...data};
+  } else {
+    LEADS.push({id:'l'+Date.now(),...data});
+  }
+  LS.set('leads',LEADS);
+  closeModal('leadModal');
+  renderLeads();
+  showToast(editId?'Lead updated':'Lead added and assigned to counsellor. Confirmation will be sent on conversion.','success');
+}
+
+function openLeadDetail(id){
+  const l = LEADS.find(x=>x.id===id);
+  document.getElementById('ldTitle').textContent = `${l.fname} ${l.lname} — Lead Details`;
+  const c = COUNSELLORS.find(x=>x.id===l.counsellor);
+  const sbc = {Open:'b-open',Qualified:'b-qual',Converted:'b-conv',Dropped:'b-drop'};
+  const canRevert = l.status!=='Qualified' && l.status!=='Converted';
+  const statusOpts = ['Open','Qualified','Converted','Dropped'].filter(s=>{
+    if(l.status==='Qualified') return s!=='Open';
+    if(l.status==='Converted') return s==='Converted';
+    return true;
+  });
+  document.getElementById('ldBody').innerHTML = `
+    <div class="info-grid">
+      <div class="info-item"><label>Full Name</label><p>${l.fname} ${l.lname}</p></div>
+      <div class="info-item"><label>Email</label><p>${l.email}</p></div>
+      <div class="info-item"><label>Phone</label><p>${l.phone}</p></div>
+      <div class="info-item"><label>University</label><p>${l.uni}</p></div>
+      <div class="info-item"><label>Program</label><p>${l.program}</p></div>
+      <div class="info-item"><label>Source</label><p>${l.source}</p></div>
+      <div class="info-item"><label>Counsellor</label><p>${c?.name||'—'}</p></div>
+      <div class="info-item"><label>Follow-Up</label><p>${l.followup}</p></div>
+    </div>
+    <div class="fg"><label>Update Status</label>
+      <select class="fc" id="ld-status">${statusOpts.map(s=>`<option ${s===l.status?'selected':''}>${s}</option>`).join('')}</select>
+      ${l.status==='Qualified'?'<p style="font-size:11px;color:var(--red);margin-top:4px">⚠ Qualified leads cannot revert to Open</p>':''}
+    </div>
+    <div class="fg"><label>Follow-Up Date</label><input class="fc" type="date" id="ld-fudate" value="${l.followup!=='—'?new Date().toISOString().slice(0,10):''}"></div>
+    <div class="fg"><label>Notes</label><textarea class="fc" id="ld-notes" rows="3">${l.notes}</textarea></div>
+    <input type="hidden" id="ld-id" value="${l.id}">`;
+  openModal('leadDetailModal');
+}
+
+function saveLeadStatus(){
+  const id = document.getElementById('ld-id').value;
+  const idx = LEADS.findIndex(l=>l.id===id);
+  if(idx<0) return;
+  const newStatus = document.getElementById('ld-status').value;
+  const old = LEADS[idx];
+  if(old.status==='Qualified' && newStatus==='Open'){ showToast('Cannot revert Qualified lead to Open','error'); return; }
+  LEADS[idx].status = newStatus;
+  LEADS[idx].notes  = document.getElementById('ld-notes').value;
+  const fd = document.getElementById('ld-fudate').value;
+  LEADS[idx].followup = newStatus==='Converted'||newStatus==='Dropped' ? '—' : (fd||old.followup);
+  LS.set('leads',LEADS);
+  closeModal('leadDetailModal');
+  renderLeads();
+  if(newStatus==='Converted') showToast('Student enrolled! Confirmation email & handbook sent automatically.','success');
+  else showToast('Lead updated successfully','success');
+}
+
+function convertLead(id){
+  const idx=LEADS.findIndex(l=>l.id===id);
+  if(idx<0) return;
+  LEADS[idx].status='Converted'; LEADS[idx].followup='—';
+  LS.set('leads',LEADS);
+  renderLeads();
+  showToast('Student enrolled! Confirmation email & program handbook sent.','success');
+}
+
+function deactivateLead(id){
+  const idx=LEADS.findIndex(l=>l.id===id);
+  if(idx<0) return;
+  LEADS[idx].active=false;
+  LS.set('leads',LEADS);
+  renderLeads();
+  showToast('Lead deactivated','warn');
+}
+
+function bulkDeactivate(){
+  const chks = document.querySelectorAll('.lead-chk:checked');
+  if(!chks.length){ showToast('Select leads to deactivate','warn'); return; }
+  chks.forEach(c=>{ const l=LEADS.find(x=>x.id===c.dataset.id); if(l) l.active=false; });
+  LS.set('leads',LEADS);
+  renderLeads();
+  showToast(`${chks.length} leads deactivated`,'warn');
+}
+
+function toggleAllChk(el){ document.querySelectorAll('.lead-chk').forEach(c=>c.checked=el.checked); }
+
+// Source dynamic field
+function handleSrcChange(){
+  const v = document.getElementById('lm-src').value;
+  const f = document.getElementById('lm-refField');
+  const l = document.getElementById('lm-refLabel');
+  const s = document.getElementById('lm-ref');
+  if(v==='Student Referral'){
+    f.style.display=''; l.textContent='Select Student';
+    s.innerHTML='<option>S-1042 — Ravindu Perera</option><option>S-1078 — Chamari Silva</option><option>S-1112 — Tharaka W.</option>';
+  } else if(v==='Staff Referral'){
+    f.style.display=''; l.textContent='Select Staff Member';
+    s.innerHTML='<option>Mr. Nimal Jayakody</option><option>Ms. Dilrukshi Weerasinghe</option><option>Mr. Pradeep Fonseka</option>';
+  } else { f.style.display='none'; }
+}
+
+// ══════════════════════════════════════════════════════════
+// PIPELINE
+// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// PIPELINE — DRAG & DROP KANBAN
+// ══════════════════════════════════════════════════════════
+const PIP_COLS = [
+  {key:'Open',      label:'Open',      cls:'lane-open', icon:'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z'},
+  {key:'Qualified', label:'Qualified', cls:'lane-qual', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'},
+  {key:'Converted', label:'Converted',cls:'lane-conv', icon:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'},
+  {key:'Dropped',   label:'Dropped',  cls:'lane-drop', icon:'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'},
+];
+
+// Avatar colour palette per counsellor
+const AVATAR_COLORS = ['#C8102E','#1A6FA1','#0E7A45','#C47900','#7B4FA6','#E05A00'];
+function avatarColor(id){ const idx=COUNSELLORS.findIndex(c=>c.id===id); return AVATAR_COLORS[idx%AVATAR_COLORS.length]||'#999'; }
+function initials(name){ return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+function srcColor(src){ const m={Agent:'b-red',Facebook:'b-blue',Website:'b-green',Instagram:'b-purple','Student Referral':'b-amber','Staff Referral':'b-amber'}; return m[src]||'b-gray'; }
+
+let _dragId = null;   // id of lead being dragged
+let _ghost  = null;   // placeholder element in drop zone
+let _dragEl = null;   // floating ghost element
+
+function renderPipeline(){
+  const data = getVisibleLeads();
+  const total = data.length || 1;
+  const board = document.getElementById('pipBoard');
+  board.innerHTML = PIP_COLS.map(col=>{
+    const items = data.filter(l=>l.status===col.key);
+    const pct = Math.round(items.length/total*100);
+    return `
+    <div class="pip-lane ${col.cls}" id="lane-${col.key}">
+      <div class="pip-lane-head">
+        <div class="pip-lane-title">
+          <div class="pip-lane-icon"><svg viewBox="0 0 24 24"><path d="${col.icon}"/></svg></div>
+          <span class="pip-lane-label">${col.label}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <span class="pip-lane-pct">${pct}%</span>
+          <span class="pip-lane-badge">${items.length}</span>
+        </div>
+      </div>
+      <div class="pip-drop-zone" id="dz-${col.key}"
+        ondragover="pipDragOver(event,'${col.key}')"
+        ondragleave="pipDragLeave(event,'${col.key}')"
+        ondrop="pipDrop(event,'${col.key}')">
+        ${items.map(l=>buildKCard(l)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Attach drag listeners to all cards
+  board.querySelectorAll('.kcard[draggable]').forEach(el=>{
+    el.addEventListener('mousedown', e=>{ if(e.button!==0) return; startDrag(e, el); });
+  });
+}
+
+function buildKCard(l){
+  const c = COUNSELLORS.find(x=>x.id===l.counsellor);
+  const cName = c ? c.name.split(' ')[0]+' '+c.name.split(' ').slice(-1)[0] : '—';
+  const cInitials = c ? initials(c.name) : '?';
+  const cColor = avatarColor(l.counsellor);
+  const srcCls = srcColor(l.source);
+  const priColor = {High:'color:var(--red)',Medium:'color:var(--amber)',Low:'color:var(--muted)'};
+  const priIcon = {High:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',Medium:'M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2z',Low:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'};
+  const nameInitials = (l.fname[0]||'?').toUpperCase();
+  const bgHues = ['#C8102E','#1A6FA1','#0E7A45','#C47900','#7B4FA6','#E05A00'];
+  const cardBg = bgHues[l.id.charCodeAt(l.id.length-1)%bgHues.length];
+
+  return `<div class="kcard" id="kcard-${l.id}" draggable="true" data-id="${l.id}">
+    ${l.escalated?`<div class="kcard-esc" title="Escalated"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>`:''}
+    <div class="kcard-top">
+      <div style="display:flex;align-items:center;gap:9px">
+        <div class="kcard-avatar" style="background:${cardBg}">${nameInitials}</div>
+        <div>
+          <div class="kcard-name">${l.fname} ${l.lname}</div>
+          <div class="kcard-prog">${l.program}</div>
+        </div>
+      </div>
+    </div>
+    <div class="kcard-meta">
+      <span class="kcard-tag badge ${srcCls}">${l.source}</span>
+      <span class="kcard-tag" style="background:var(--g50);color:var(--g600);border:1px solid var(--border)">${l.uni}</span>
+      ${l.priority?`<span class="kcard-tag" style="${priColor[l.priority]||''};background:transparent"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor"><path d="${priIcon[l.priority]||''}"/></svg>${l.priority}</span>`:''}
+    </div>
+    <div class="kcard-footer">
+      <div class="kcard-counsellor">
+        <div class="kcard-cav" style="background:${cColor}">${cInitials}</div>
+        ${cName}
+      </div>
+      ${l.followup&&l.followup!=='—'?`<div class="kcard-fu"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5z"/></svg>${l.followup}</div>`:''}
+    </div>
+    <button class="kcard-detail-btn" onclick="event.stopPropagation();openLeadDetail('${l.id}')">View →</button>
+  </div>`;
+}
+
+// ── DRAG ENGINE ──
+function startDrag(e, el){
+  _dragId = el.dataset.id;
+  _dragEl = el;
+  // build floating ghost
+  const ghost = document.createElement('div');
+  ghost.id = 'dragGhost';
+  const l = LEADS.find(x=>x.id===_dragId);
+  ghost.innerHTML = `<div style="font-size:13px;font-weight:700;margin-bottom:4px">${l.fname} ${l.lname}</div><div style="font-size:11px;color:var(--muted)">${l.program} · ${l.uni}</div>`;
+  document.body.appendChild(ghost);
+  positionGhost(e);
+  el.classList.add('dragging');
+
+  const onMove = ev => {
+    positionGhost(ev);
+    // find hovered drop zone via elementFromPoint
+    ghost.style.display='none';
+    const under = document.elementFromPoint(ev.clientX, ev.clientY);
+    ghost.style.display='';
+    const dz = under?.closest('.pip-drop-zone');
+    document.querySelectorAll('.pip-drop-zone').forEach(z=>z.classList.remove('drag-over'));
+    if(dz) dz.classList.add('drag-over');
+  };
+
+  const onUp = ev => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    ghost.remove();
+    el.classList.remove('dragging');
+    document.querySelectorAll('.pip-drop-zone').forEach(z=>z.classList.remove('drag-over'));
+
+    // find drop target
+    ghost.style.display='none'; // already removed but safe
+    const under = document.elementFromPoint(ev.clientX, ev.clientY);
+    const dz = under?.closest ? (under.classList.contains('pip-drop-zone') ? under : under.closest('.pip-drop-zone')) : null;
+    if(dz){
+      const newStatus = dz.id.replace('dz-','');
+      dropLead(_dragId, newStatus);
+    }
+    _dragId=null; _dragEl=null;
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function positionGhost(e){
+  const g = document.getElementById('dragGhost');
+  if(!g) return;
+  g.style.left = (e.clientX+14)+'px';
+  g.style.top  = (e.clientY-20)+'px';
+}
+
+function dropLead(id, newStatus){
+  const idx = LEADS.findIndex(l=>l.id===id);
+  if(idx<0) return;
+  const lead = LEADS[idx];
+  const oldStatus = lead.status;
+  if(oldStatus===newStatus) return;
+
+  // Enforce status rules
+  if(oldStatus==='Qualified' && newStatus==='Open'){
+    showToast('Qualified leads cannot be moved back to Open','error');
+    renderPipeline(); return;
+  }
+  if(oldStatus==='Converted'){
+    showToast('Converted students cannot be moved','error');
+    renderPipeline(); return;
+  }
+
+  LEADS[idx].status = newStatus;
+  if(newStatus==='Converted'||newStatus==='Dropped') LEADS[idx].followup='—';
+  LS.set('leads', LEADS);
+  renderPipeline();
+
+  const msgs = {
+    Qualified:`${lead.fname} ${lead.lname} qualified! 🎯`,
+    Converted:`🎉 ${lead.fname} ${lead.lname} enrolled! Confirmation email & handbook sent.`,
+    Dropped:`${lead.fname} ${lead.lname} marked as dropped.`,
+    Open:`${lead.fname} ${lead.lname} moved back to Open.`,
+  };
+  const types = {Converted:'success',Qualified:'success',Dropped:'warn',Open:''};
+  showToast(msgs[newStatus]||'Status updated', types[newStatus]||'');
+}
+
+// native HTML5 DnD fallback handlers (for touch / Safari)
+function pipDragOver(e, col){ e.preventDefault(); document.getElementById('dz-'+col)?.classList.add('drag-over'); }
+function pipDragLeave(e, col){ document.getElementById('dz-'+col)?.classList.remove('drag-over'); }
+function pipDrop(e, col){ e.preventDefault(); document.getElementById('dz-'+col)?.classList.remove('drag-over'); if(_dragId) dropLead(_dragId, col); }
+
+// ══════════════════════════════════════════════════════════
+// FOLLOW-UPS
+// ══════════════════════════════════════════════════════════
+function renderFollowUps(){
+  const pc = {High:'b-red',Medium:'b-amber',Low:'b-blue'};
+  // Scope follow-ups by role
+  let visible = FOLLOWUPS;
+  if(currentUser.role==='counsellor'){
+    const myC = COUNSELLORS.find(c=>c.id===currentUser.counsellorId);
+    if(myC) visible = FOLLOWUPS.filter(f=>f.counsellorId===myC.id || f.counsellor===myC.name);
+  } else if(currentUser.role==='manager'){
+    visible = FOLLOWUPS.filter(f=>f.uni===currentUser.uni);
+  }
+  document.getElementById('fuBody').innerHTML = visible.map((f)=>{
+    const realIdx = FOLLOWUPS.indexOf(f);
+    return `<tr>
+      <td><strong>${f.student}</strong></td>
+      <td>${f.program} — ${f.uni}</td>
+      <td>${f.counsellor}</td>
+      <td>${f.time}</td>
+      <td>${f.source}</td>
+      <td><span class="badge ${pc[f.priority]}">${f.priority}</span></td>
+      <td>${f.escalated?'<span class="badge b-red">Escalated</span>':'<span class="badge b-green">No</span>'}</td>
+      <td><button class="btn btn-p btn-sm" onclick="markFUDone(${realIdx})">Done</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">No follow-ups scheduled</td></tr>';
+}
+
+function markFUDone(i){
+  FOLLOWUPS.splice(i,1);
+  LS.set('followups',FOLLOWUPS);
+  renderFollowUps();
+  document.getElementById('fuDue').textContent=FOLLOWUPS.length;
+  showToast('Follow-up marked as completed','success');
+}
+
+// ══════════════════════════════════════════════════════════
+// COUNSELLORS
+// ══════════════════════════════════════════════════════════
+function renderCounsellorPage(){
+  document.getElementById('counsellorCards').innerHTML = COUNSELLORS.map(c=>{
+    const pct=Math.min(100,Math.round(c.enrolled/c.target*100));
+    return `<div class="tc-card">
+      <div class="tc-top"><div><div class="tc-name">${c.name}</div><div class="tc-uni">${c.uni}</div></div>
+      <div><div class="tc-num">${c.enrolled}</div><div class="tc-of">/ ${c.target}</div></div></div>
+      <div class="prog"><div class="prog-f ${pct>=100?'g':pct>=60?'':'a'}" style="width:${pct}%"></div></div>
+      <div class="tc-conv">${pct}% · Conv. ${Math.round(c.enrolled/(c.leads||1)*100)}% · ${getSlabLabel(c)}</div></div>`;
+  }).join('');
+
+  document.getElementById('counsellorTable').innerHTML = COUNSELLORS.map(c=>{
+    const pct=Math.min(100,Math.round(c.enrolled/c.target*100));
+    const comm=getCommission(c);
+    return `<tr>
+      <td><strong>${c.name}</strong><br><small style="color:var(--muted)">${c.email}</small></td>
+      <td>${c.uni}</td>
+      <td>${c.target}</td>
+      <td>${c.enrolled}</td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="prog" style="flex:1;min-width:80px"><div class="prog-f" style="width:${pct}%"></div></div><span style="font-size:11px">${pct}%</span></div></td>
+      <td>${getSlabLabel(c)}</td>
+      <td>${comm?comm+'%':'<span class="badge b-gray">None</span>'}</td>
+      <td><div class="acts">
+        <button class="btn btn-s btn-sm" onclick="editCounsellorSlab('${c.id}')">Slabs</button>
+        <button class="btn btn-g btn-sm" onclick="deleteCounsellor('${c.id}')">Remove</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  // populate slab counsellor select
+  populateSelects();
+}
+
+function saveCounsellor(){
+  const name=document.getElementById('cm-name').value.trim();
+  const uni=document.getElementById('cm-uni').value;
+  const target=parseInt(document.getElementById('cm-target').value)||20;
+  const email=document.getElementById('cm-email').value;
+  if(!name){ showToast('Name is required','error'); return; }
+  COUNSELLORS.push({id:'c'+Date.now(),name,uni,target,enrolled:0,leads:0,slabS1:2,slabS2:5,slabS3:7,email});
+  LS.set('counsellors',COUNSELLORS);
+  closeModal('counsellorModal');
+  renderCounsellorPage();
+  showToast('Counsellor added','success');
+}
+
+function editCounsellorSlab(id){
+  const c=COUNSELLORS.find(x=>x.id===id);
+  document.getElementById('sm-coun').value=id;
+  document.getElementById('sm-target').value=c.target;
+  document.getElementById('sm-s1').value=c.slabS1;
+  document.getElementById('sm-s2').value=c.slabS2;
+  document.getElementById('sm-s3').value=c.slabS3;
+  openModal('slabModal');
+}
+
+function saveSlabs(){
+  const id=document.getElementById('sm-coun').value;
+  const idx=COUNSELLORS.findIndex(c=>c.id===id);
+  if(idx<0) return;
+  COUNSELLORS[idx].target=parseInt(document.getElementById('sm-target').value)||COUNSELLORS[idx].target;
+  COUNSELLORS[idx].slabS1=parseFloat(document.getElementById('sm-s1').value)||2;
+  COUNSELLORS[idx].slabS2=parseFloat(document.getElementById('sm-s2').value)||5;
+  COUNSELLORS[idx].slabS3=parseFloat(document.getElementById('sm-s3').value)||7;
+  LS.set('counsellors',COUNSELLORS);
+  closeModal('slabModal');
+  renderCounsellorPage();
+  showToast('Commission slabs saved','success');
+}
+
+function deleteCounsellor(id){
+  const idx=COUNSELLORS.findIndex(c=>c.id===id);
+  if(idx<0) return;
+  COUNSELLORS.splice(idx,1);
+  LS.set('counsellors',COUNSELLORS);
+  renderCounsellorPage();
+  showToast('Counsellor removed','warn');
+}
+
+// ══════════════════════════════════════════════════════════
+// AGENTS
+// ══════════════════════════════════════════════════════════
+function renderAgents(){
+  const q=(document.getElementById('agentSearch')||{}).value?.toLowerCase()||'';
+  const data = AGENTS.filter(a=>!q||a.name.toLowerCase().includes(q));
+  const sc={Eligible:'b-green','Pending Payment':'b-red','Partially Eligible':'b-amber'};
+  document.getElementById('agentsBody').innerHTML = data.map(a=>`<tr>
+    <td><strong>${a.name}</strong></td>
+    <td><span class="badge b-blue">${a.type}</span></td>
+    <td>${a.uni}</td>
+    <td>${a.referred}</td>
+    <td>${a.eligible}</td>
+    <td>${a.commType==='Percentage (%)'?a.commVal+'% of tuition':'LKR '+Number(a.commVal).toLocaleString()}</td>
+    <td><span class="badge ${sc[a.status]||'b-gray'}">${a.status}</span></td>
+    <td>${a.approved?'<span class="badge b-green">✓ Approved</span>':`<button class="btn btn-p btn-sm" onclick="approveAgent('${a.id}')">Approve</button>`}</td>
+    <td><button class="btn btn-g btn-sm" onclick="deleteAgent('${a.id}')">Remove</button></td>
+  </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">No agents found</td></tr>';
+}
+
+function saveAgent(){
+  const name=document.getElementById('am-name').value.trim();
+  if(!name){ showToast('Name required','error'); return; }
+  AGENTS.push({id:'a'+Date.now(),name,type:document.getElementById('am-type').value,uni:document.getElementById('am-uni').value,referred:0,eligible:0,commType:document.getElementById('am-ctype').value,commVal:document.getElementById('am-cval').value||'0',status:'Pending Payment',approved:false});
+  LS.set('agents',AGENTS);
+  closeModal('agentModal');
+  renderAgents();
+  showToast('Agent added','success');
+}
+
+function approveAgent(id){ const a=AGENTS.find(x=>x.id===id); if(a){a.approved=true;LS.set('agents',AGENTS);renderAgents();showToast('Agent commission approved','success');} }
+function deleteAgent(id){ AGENTS.splice(AGENTS.findIndex(a=>a.id===id),1); LS.set('agents',AGENTS); renderAgents(); showToast('Agent removed','warn'); }
+
+// ══════════════════════════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════════════════════════
+function renderReports(){
+  const active=getVisibleLeads();
+  const total=active.length;
+  const statuses=['Open','Qualified','Converted','Dropped'];
+  document.getElementById('rptStatusBody').innerHTML=statuses.map(s=>{
+    const c=active.filter(l=>l.status===s).length;
+    const sbc={Open:'b-open',Qualified:'b-qual',Converted:'b-conv',Dropped:'b-drop'};
+    return `<tr><td><span class="badge ${sbc[s]}">${s}</span></td><td>${c}</td><td>${total?Math.round(c/total*100):0}%</td></tr>`;
+  }).join('');
+
+  const srcMap={};
+  active.forEach(l=>{srcMap[l.source]=(srcMap[l.source]||{leads:0,conv:0});srcMap[l.source].leads++;if(l.status==='Converted')srcMap[l.source].conv++;});
+  document.getElementById('rptSrcBody').innerHTML=Object.entries(srcMap).map(([s,v])=>`<tr><td>${s}</td><td>${v.leads}</td><td>${v.conv}</td><td><strong>${Math.round(v.conv/v.leads*100)}%</strong></td></tr>`).join('');
+
+  document.getElementById('rptFUBody').innerHTML=COUNSELLORS.map(c=>`<tr><td>${c.name}</td><td>${c.leads}</td><td>${c.enrolled}</td><td>${c.leads-c.enrolled}</td><td><span class="badge ${c.leads-c.enrolled>5?'b-red':'b-green'}">${c.leads-c.enrolled>5?Math.round((c.leads-c.enrolled)/10):'0'}</span></td></tr>`).join('');
+
+  document.getElementById('rptCounsellorBody').innerHTML=COUNSELLORS.map(c=>{
+    const rem=Math.max(0,c.target-c.enrolled);
+    const conv=c.leads?Math.round(c.enrolled/c.leads*100):0;
+    return `<tr><td><strong>${c.name}</strong></td><td>${c.uni}</td><td>${c.target}</td><td>${c.enrolled}</td><td>${rem||'—'}</td><td>${conv}%</td><td><span class="badge b-amber">${getSlabLabel(c)}</span></td></tr>`;
+  }).join('');
+
+  const commRows = [
+    ...COUNSELLORS.filter(c=>c.enrolled>10).map(c=>({name:c.name,type:'Counsellor',uni:c.uni,students:c.enrolled,comm:getCommission(c)+'%',elig:'Eligible',appr:'Pending HOM Approval'})),
+    ...AGENTS.map(a=>({name:a.name,type:a.type,uni:a.uni,students:a.eligible,comm:a.commType==='Percentage (%)'?a.commVal+'%':'LKR '+Number(a.commVal).toLocaleString(),elig:a.status,appr:a.approved?'Approved':'Pending Approval'})),
+  ];
+  document.getElementById('rptCommBody').innerHTML=commRows.map(r=>`<tr><td><strong>${r.name}</strong></td><td><span class="badge b-blue">${r.type}</span></td><td>${r.uni}</td><td>${r.students}</td><td>${r.comm}</td><td><span class="badge ${r.elig==='Eligible'?'b-green':r.elig==='Pending Payment'?'b-red':'b-amber'}">${r.elig}</span></td><td><span class="badge ${r.appr==='Approved'?'b-green':'b-amber'}">${r.appr}</span></td></tr>`).join('');
+
+  // Uni chart
+  setTimeout(()=>{
+    if(chartInstances.rptUni){ chartInstances.rptUni.destroy(); }
+    const uniCounts={};
+    MD.universities.forEach(u=>{uniCounts[u]=active.filter(l=>l.uni===u).length;});
+    chartInstances.rptUni=new Chart(document.getElementById('rptUniChart'),{type:'pie',data:{labels:Object.keys(uniCounts),datasets:[{data:Object.values(uniCounts),backgroundColor:['#C8102E','#1A6FA1','#0E7A45','#D4820A','#7B4FA6'],borderWidth:2,borderColor:'#fff'}]},options:{plugins:{legend:{position:'right'}}}});
+  },50);
+}
+
+// ══════════════════════════════════════════════════════════
+// MASTER DATA
+// ══════════════════════════════════════════════════════════
+function renderMasterData(){
+  const cats = [
+    {key:'universities',label:'Universities'},
+    {key:'programs',label:'Programs'},
+    {key:'sources',label:'Lead Sources'},
+    {key:'commTypes',label:'Commission Types'},
+  ];
+  cats.forEach(({key,label})=>{
+    const el=document.getElementById('md-'+key);
+    if(!el) return;
+    el.innerHTML=`<div class="md-chip-row">${(MD[key]||[]).map((v,i)=>`<div class="md-chip">${v}<button onclick="removeMDItem('${key}',${i})">×</button></div>`).join('')}</div>
+    <div class="md-add-row"><input id="mdi-${key}" placeholder="Add new ${label.toLowerCase().slice(0,-1)}…" onkeydown="if(event.key==='Enter')addMDItem('${key}')"><button class="btn btn-p btn-sm" onclick="addMDItem('${key}')">Add</button></div>`;
+  });
+}
+
+let _mdCurrent='';
+function openMDAdd(key){_mdCurrent=key;const labels={universities:'University',programs:'Program',sources:'Lead Source',commTypes:'Commission Type'};document.getElementById('mdModalTitle').textContent='Add '+labels[key];document.getElementById('mdModalLabel').textContent=labels[key]+' Name';document.getElementById('mdModalInput').value='';openModal('mdModal');}
+function saveMDItem(){
+  const v=document.getElementById('mdModalInput').value.trim();
+  if(!v){showToast('Value required','error');return;}
+  if(!MD[_mdCurrent]) MD[_mdCurrent]=[];
+  MD[_mdCurrent].push(v);
+  LS.set('masterData',MD);
+  closeModal('mdModal');
+  renderMasterData();
+  populateSelects();
+  showToast('Item added','success');
+}
+function addMDItem(key){
+  const v=document.getElementById('mdi-'+key)?.value.trim();
+  if(!v) return;
+  if(!MD[key]) MD[key]=[];
+  MD[key].push(v);
+  LS.set('masterData',MD);
+  renderMasterData();
+  populateSelects();
+  showToast('Item added','success');
+}
+function removeMDItem(key,i){
+  MD[key].splice(i,1);
+  LS.set('masterData',MD);
+  renderMasterData();
+  populateSelects();
+  showToast('Item removed','warn');
+}
+
+// ══════════════════════════════════════════════════════════
+// USERS
+// ══════════════════════════════════════════════════════════
+function renderUsers(){
+  const roleLabels={ceo:'CEO',hom:'Head of Marketing',manager:'Manager',counsellor:'Counsellor'};
+  const roleColors={ceo:'b-purple',hom:'b-red',manager:'b-blue',counsellor:'b-green'};
+  document.getElementById('usersBody').innerHTML=USERS.map(u=>{
+    const linkedC = u.counsellorId ? COUNSELLORS.find(c=>c.id===u.counsellorId) : null;
+    return `<tr>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.email}</td>
+      <td><span class="badge ${roleColors[u.role]}">${roleLabels[u.role]}</span></td>
+      <td>${u.uni||'All'}</td>
+      <td>${linkedC ? `<span class="badge b-green">Linked: ${linkedC.name}</span>` : (u.role==='counsellor'?'<span class="badge b-red">Not linked</span>':'—')}</td>
+      <td><span class="badge b-green">Active</span></td>
+      <td><div class="acts">
+        ${u.id!==currentUser.id?`<button class="btn btn-g btn-sm" onclick="deleteUser('${u.id}')">Remove</button>`:'<span style="font-size:11px;color:var(--muted)">You</span>'}
+      </div></td>
+    </tr>`;
+  }).join('');
+  // populate uni in user modal
+  const umUni=document.getElementById('um-uni');
+  if(umUni) umUni.innerHTML='<option value="">All</option>'+MD.universities.map(u=>`<option>${u}</option>`).join('');
+  // populate counsellor link select
+  const umCounLink=document.getElementById('um-coun-link');
+  if(umCounLink) umCounLink.innerHTML='<option value="">— Not linked —</option>'+COUNSELLORS.map(c=>`<option value="${c.id}">${c.name} (${c.uni})</option>`).join('');
+}
+
+function toggleCounsellorField(){
+  const role = document.getElementById('um-role').value;
+  const field = document.getElementById('um-coun-field');
+  field.style.display = role==='counsellor' ? '' : 'none';
+}
+
+function saveUser(){
+  const name=document.getElementById('um-name').value.trim();
+  const email=document.getElementById('um-email').value.trim();
+  const pass=document.getElementById('um-pass').value;
+  if(!name||!email||!pass){showToast('All fields required','error');return;}
+  if(USERS.find(u=>u.email===email)){showToast('Email already exists','error');return;}
+  const role=document.getElementById('um-role').value;
+  const counsellorId = role==='counsellor' ? (document.getElementById('um-coun-link').value||'') : '';
+  USERS.push({id:'u'+Date.now(),name,email,password:pass,role,uni:document.getElementById('um-uni').value,counsellorId});
+  LS.set('users',USERS);
+  closeModal('userModal');
+  renderUsers();
+  showToast('User account created','success');
+}
+
+function deleteUser(id){
+  if(id===currentUser.id){showToast("Can't delete your own account",'error');return;}
+  USERS.splice(USERS.findIndex(u=>u.id===id),1);
+  LS.set('users',USERS);
+  renderUsers();
+  showToast('User removed','warn');
+}
+
+// ══════════════════════════════════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.classList.contains('modal-ov'))e.target.classList.remove('open');});
+
+// ══════════════════════════════════════════════════════════
+// TAB HELPER
+// ══════════════════════════════════════════════════════════
+function switchTab(btn,panelId){
+  const container=btn.closest('.tabs');
+  container.querySelectorAll('.tab-b').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const parent=container.nextElementSibling?.parentElement||container.parentElement;
+  parent.querySelectorAll('.tab-p').forEach(p=>p.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════
+function showToast(msg,type=''){
+  const t=document.createElement('div');
+  t.className='toast '+(type||'');t.textContent=msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(()=>t.remove(),3600);
+}
+
+// ══════════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{loadAll();restoreSession();});
+</script>
+</body>
+</html>
