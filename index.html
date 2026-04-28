@@ -783,7 +783,6 @@ input,select,textarea{font-family:var(--font-b)}
       <div class="tabs">
         <button class="tab-b active" onclick="switchTab(this,'lt-status')">Lead Status</button>
         <button class="tab-b" onclick="switchTab(this,'lt-bulk')">Bulk Upload</button>
-        <button class="tab-b" onclick="switchTab(this,'lt-digital')">Digital Leads</button>
       </div>
       <div class="tab-p active" id="lt-status">
         <div class="toolbar">
@@ -810,17 +809,6 @@ input,select,textarea{font-family:var(--font-b)}
             <tr><td>Website Inquiry — Mar 2025</td><td>10 Mar 2025</td><td>29</td><td><span class="badge b-red">3</span></td><td><span class="badge b-amber">In Progress</span></td><td><button class="btn btn-s btn-sm">View Leads</button></td></tr>
           </tbody></table></div></div>
       </div>
-      <div class="tab-p" id="lt-digital">
-        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/></svg></div><div class="stat-v">98</div><div class="stat-l">Facebook</div></div>
-          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg></div><div class="stat-v">64</div><div class="stat-l">Website</div></div>
-          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg></div><div class="stat-v">37</div><div class="stat-l">Instagram</div></div>
-          <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 6V7l4 4-4 4v-2H8v-4h4z"/></svg></div><div class="stat-v">22</div><div class="stat-l">Other Platforms</div></div>
-        </div>
-        <div class="card"><div class="ch"><h3>Digital Lead Workflow</h3><span class="badge b-red">15 follow-ups pending</span></div>
-          <div class="cb np"><table class="dt"><thead><tr><th>Name</th><th>Platform</th><th>Program Interest</th><th>Received</th><th>Assigned To</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="digitalLeadsBody"></tbody></table></div></div>
-      </div>
     </div>
 
     <!-- ════ PIPELINE ════ -->
@@ -846,10 +834,9 @@ input,select,textarea{font-family:var(--font-b)}
 
     <!-- ════ FOLLOW-UPS ════ -->
     <div class="page-s" id="page-followups">
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
         <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg></div><div class="stat-v" id="fuDue">31</div><div class="stat-l">Follow-Ups Due Today</div></div>
         <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/></svg></div><div class="stat-v">12</div><div class="stat-l">Bulk Upload Pending</div></div>
-        <div class="stat-c"><div class="stat-ic"><svg viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/></svg></div><div class="stat-v">15</div><div class="stat-l">Digital Leads Pending</div></div>
       </div>
       <div class="esc-ban"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><p><strong>5 leads auto-escalated:</strong> Counsellors missed scheduled follow-ups. Escalated to Manager → Head of Marketing.</p></div>
       <div class="card"><div class="ch"><h3>Today's Follow-Up Schedule</h3></div>
@@ -1370,7 +1357,7 @@ function navigate(page){
   buildTopbarActions(page);
   // Render page
   if(page==='dashboard') renderDashboard();
-  if(page==='leads') { renderLeads(); renderDigitalLeads(); }
+  if(page==='leads') { renderLeads(); }
   if(page==='pipeline') renderPipeline();
   if(page==='followups') renderFollowUps();
   if(page==='counsellors') renderCounsellorPage();
@@ -1533,18 +1520,6 @@ function renderLeads(){
   </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">No leads found</td></tr>';
 }
 
-function renderDigitalLeads(){
-  const digital = getVisibleLeads().filter(l=>['Facebook','Website','Instagram'].includes(l.source));
-  document.getElementById('digitalLeadsBody').innerHTML = digital.map(l=>`<tr>
-    <td><strong>${l.fname} ${l.lname}</strong><br><small style="color:var(--muted)">${l.email}</small></td>
-    <td><span class="badge b-blue">${l.source}</span></td>
-    <td>${l.program} — ${l.uni}</td>
-    <td>${l.followup}</td>
-    <td>${(COUNSELLORS.find(c=>c.id===l.counsellor)||{}).name||'—'}</td>
-    <td><span class="badge ${l.status==='Open'?'b-open':l.status==='Qualified'?'b-qual':'b-conv'}">${l.status}</span></td>
-    <td><button class="btn btn-p btn-sm" onclick="openLeadDetail('${l.id}')">View</button></td>
-  </tr>`).join('');
-}
 
 function openLeadModal(editId){
   document.getElementById('lm-editId').value = editId||'';
